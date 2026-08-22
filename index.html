@@ -447,8 +447,13 @@
     padding:32px 32px 28px;
     position:relative;
   }
+  .modal-topbar{
+    display:flex; justify-content:flex-end; align-items:center;
+    gap:8px;
+    margin-bottom:16px;
+  }
   .modal-close{
-    position:absolute; top:18px; right:18px;
+    position:static;
     width:32px; height:32px;
     border:1px solid var(--line);
     background:transparent;
@@ -457,10 +462,11 @@
     font-size:16px;
     color:var(--ink);
     display:flex; align-items:center; justify-content:center;
+    flex:none;
   }
   .modal-close:hover{border-color:var(--ink);}
   .modal-share{
-    position:absolute; top:58px; right:18px;
+    position:static;
     border:1px solid var(--line);
     background:transparent;
     cursor:pointer;
@@ -470,6 +476,7 @@
     color:var(--ink);
     padding:6px 10px;
     white-space:nowrap;
+    flex:none;
   }
   .modal-share:hover{border-color:var(--ink); background:var(--paper-deep);}
   .modal .appno{margin-bottom:10px; display:block;}
@@ -478,7 +485,6 @@
     font-size:26px;
     line-height:1.3;
     margin:0 0 14px;
-    padding-right:40px;
   }
   .modal-func{
     font-size:14.5px;
@@ -510,8 +516,8 @@
     flex-wrap:wrap;
   }
   .modal-score-row .meter{ height:8px; }
-  .modal-score-row .meter-score{ font-size:32px; }
-  .modal-score-row .score-badge{ font-size:22px; padding:6px 16px; }
+  .modal-score-row .meter-score{ font-size:20px; }
+  .modal-score-row .score-badge{ font-size:13px; padding:4px 10px; }
   .note-label{
     font-family:'IBM Plex Mono', monospace;
     font-size:11px;
@@ -1625,9 +1631,10 @@
   <div class="search-examples" id="searchExamples">
     <span class="ex-label">인기 검색어</span>
     <button class="example-chip" data-example="홍삼">홍삼</button>
-    <button class="example-chip" data-example="비타민 C">비타민 C</button>
+    <button class="example-chip" data-example="비타민">비타민</button>
     <button class="example-chip" data-example="오메가3">오메가3</button>
     <button class="example-chip" data-example="콘드로이친">콘드로이친</button>
+    <button class="example-chip" data-example="프로바이오틱스">프로바이오틱스</button>
   </div>
   <div class="chip-row" id="chipRow"></div>
   <div class="result-count" id="resultCount"></div>
@@ -1857,7 +1864,6 @@
   <div class="about-block">
     <div class="about-block-head">👨‍🔬 누가 운영하나요?</div>
     <div class="evaluator-card">
-      <div class="evaluator-avatar">이</div>
       <div>
         <div class="evaluator-name">이충호</div>
         <div class="evaluator-affil">동국대학교 약학대학 교수</div>
@@ -1918,7 +1924,7 @@
     <button type="button" class="report-submit" id="reportSubmitBtn">제출하기 →</button>
     <p class="report-error" id="reportError"></p>
     <div class="report-result" id="reportResult">
-      <div class="report-result-head">메일 앱이 자동으로 안 열렸다면, 아래 내용을 복사해서 <b>evidence-review@example.com</b>으로 직접 보내주세요.</div>
+      <div class="report-result-head">메일 앱이 자동으로 안 열렸다면, 아래 내용을 복사해서 <b>choongholee@dongguk.edu</b>으로 직접 보내주세요.</div>
       <textarea class="report-result-body" id="reportResultBody" readonly></textarea>
       <button type="button" class="report-copy-btn" id="reportCopyBtn">내용 복사하기</button>
       <span class="report-copy-done" id="reportCopyDone">복사됐어요 ✓</span>
@@ -2344,8 +2350,10 @@ function openModal(id){
   if(!d) return;
   const stampCls = d.status === "검증완료" ? "full" : "partial";
   document.getElementById('modal').innerHTML = `
-    <button class="modal-close" id="modalClose" aria-label="닫기">✕</button>
-    <button class="modal-share" id="modalShare" aria-label="공유 링크 복사">🔗 공유 링크 복사</button>
+    <div class="modal-topbar">
+      <button class="modal-share" id="modalShare" aria-label="공유 링크 복사">🔗 공유 링크 복사</button>
+      <button class="modal-close" id="modalClose" aria-label="닫기">✕</button>
+    </div>
     <span class="appno">${d.evidenceType === "meta" ? d.appno : "제"+d.appno+"호"} · ${d.category}</span>
     ${d.evidenceType === "meta" ? `<div><span class="meta-tag" title="정부 개별인정이 아닌, 성분 전체에 대한 메타분석·체계적문헌고찰을 근거로 채점했어요">📊 메타분석 근거 (고시형 원료)</span></div>` : ""}
     <h2>${d.name}</h2>
@@ -2489,7 +2497,7 @@ document.getElementById('reportSubmitBtn')?.addEventListener('click', ()=>{
 
   const subject = `[근거 제보] ${type}`;
   const bodyLines = [
-    `받는 주소: evidence-review@example.com`,
+    `받는 주소: choongholee@dongguk.edu`,
     `제목: ${subject}`,
     '',
     `분류: ${type}`,
@@ -2502,7 +2510,7 @@ document.getElementById('reportSubmitBtn')?.addEventListener('click', ()=>{
   ];
   const body = bodyLines.join('\n');
   const mailtoBody = bodyLines.slice(2).join('\n'); // mailto 본문에는 받는주소/제목 줄 제외
-  const mailto = `mailto:evidence-review@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailtoBody)}`;
+  const mailto = `mailto:choongholee@dongguk.edu?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailtoBody)}`;
 
   document.getElementById('reportResultBody').value = body;
   resultEl.classList.add('show');
