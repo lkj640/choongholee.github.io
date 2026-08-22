@@ -205,6 +205,63 @@
     color:#f2f2ea;
   }
 
+  /* ---------- Tabs ---------- */
+  .tabbar{
+    display:flex; gap:0;
+    border-bottom:1px solid var(--line);
+    background:var(--paper);
+    padding:0 6vw;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .tabbar::-webkit-scrollbar{ display:none; }
+  .tab-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    font-weight:600;
+    padding:14px 18px;
+    background:transparent;
+    border:none;
+    border-bottom:2.5px solid transparent;
+    color:var(--ink-soft);
+    cursor:pointer;
+    white-space:nowrap;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .tab-btn:hover{ color:var(--ink); }
+  .tab-btn.active{
+    color:var(--green-deep);
+    border-bottom-color:var(--green-deep);
+  }
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+
+  /* ---------- Search examples ---------- */
+  .search-examples{
+    display:flex; align-items:center; flex-wrap:wrap; gap:8px;
+    font-family:'IBM Plex Sans KR', sans-serif;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .search-examples .ex-label{ margin-right:2px; }
+  .example-chip{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    padding:5px 12px;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--green-deep);
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .example-chip:hover{ border-color:var(--green-deep); background:#e4e8de; }
+  @media (max-width:700px){
+    .tabbar{ padding:0 4vw; }
+    .tab-btn{ padding:12px 13px; font-size:12px; }
+    .search-examples{ font-size:11.5px; }
+    .example-chip{ font-size:11.5px; padding:5px 10px; }
+  }
+
   /* 모바일: 검색바 위 sticky 영역이 칩 줄바꿈으로 화면을 다 차지하지 않도록 —
      카테고리 칩을 가로 스와이프 한 줄로 전환해 세로 공간을 확보 */
   @media (max-width:700px){
@@ -402,6 +459,19 @@
     display:flex; align-items:center; justify-content:center;
   }
   .modal-close:hover{border-color:var(--ink);}
+  .modal-share{
+    position:absolute; top:58px; right:18px;
+    border:1px solid var(--line);
+    background:transparent;
+    cursor:pointer;
+    font-family:'IBM Plex Sans KR', sans-serif;
+    font-size:12px;
+    font-weight:600;
+    color:var(--ink);
+    padding:6px 10px;
+    white-space:nowrap;
+  }
+  .modal-share:hover{border-color:var(--ink); background:var(--paper-deep);}
   .modal .appno{margin-bottom:10px; display:block;}
   .modal h2{
     font-family:'Noto Serif KR', serif;
@@ -437,10 +507,11 @@
   .modal-score-row{
     display:flex; align-items:center; gap:14px;
     margin-bottom:20px;
+    flex-wrap:wrap;
   }
   .modal-score-row .meter{ height:8px; }
-  .modal-score-row .meter-score{ font-size:16px; }
-  .modal-score-row .score-badge{ font-size:11px; padding:3px 8px; }
+  .modal-score-row .meter-score{ font-size:32px; }
+  .modal-score-row .score-badge{ font-size:22px; padding:6px 16px; }
   .note-label{
     font-family:'IBM Plex Mono', monospace;
     font-size:11px;
@@ -1501,14 +1572,74 @@
     </nav>
   </div>
   <h1>이 영양제,<br><em>진짜 효과 있을까?</em></h1>
-  <p class="lede" id="ledeText">정부 인정을 받았다고 해서 과학적 근거가 다 탄탄한 건 아니에요. 건강기능식품 원료 하나하나에 대해, 실제로 어떤 사람들을 대상으로 어떤 실험을 했는지 논문을 직접 찾아 확인했어요.</p>
-  <div class="stat-row">
-    <div class="stat"><span class="num" id="statTotal">–</span><span class="lbl">확인한 원료 수</span></div>
-    <div class="stat good"><span class="num" id="statIndividual">–</span><span class="lbl">개별인정형 원료</span></div>
-    <div class="stat warn"><span class="num" id="statMeta">–</span><span class="lbl">메타분석 기반 고시형 원료</span></div>
-  </div>
+  <p class="lede" id="ledeText">정부 인정을 받았다고 해서 과학적 근거가 다 탄탄한 건 아니에요. 원료명을 검색해서 논문 기반 근거 점수를 바로 확인해보세요.</p>
 </header>
 
+<nav class="tabbar">
+  <button class="tab-btn active" data-tab="search">🔍 원료 검색</button>
+  <button class="tab-btn" data-tab="rubric">📐 점수 어떻게 매겼나</button>
+  <button class="tab-btn" data-tab="stats">📊 전체 통계</button>
+</nav>
+
+<div class="tab-panel active" id="tab-search" data-tabpanel="search">
+
+<div class="lookup-banner" id="lookupBanner">
+  <div class="lookup-step">
+    <span class="lookup-num">1</span>
+    <div>
+      <strong>제품 뒷면 &ldquo;원재료명&rdquo;을 확인하세요</strong>
+      <p>건기식은 법적으로 원재료명 전체를 표기해야 해요. 괄호 안 영문 코드(예: LMT1-48, KSM-66®)까지 함께 적혀 있는 경우가 많아요.</p>
+    </div>
+  </div>
+  <div class="lookup-step">
+    <span class="lookup-num">2</span>
+    <div>
+      <strong>원재료명이 헷갈리면 식품안전나라에서 제품명으로 조회</strong>
+      <p>식약처 공식 DB(식품안전나라)는 제품명으로 검색하면 등록된 원재료명을 정확히 보여줘요. 저희는 이 공식 데이터에 접근할 수 없어서, 직접 연결해드리는 대신 안내해드려요.</p>
+      <a href="https://www.foodsafetykorea.go.kr/portal/healthyfoodlife/searchGoods.do" target="_blank" rel="noopener">식품안전나라에서 제품명으로 원료 조회 →</a>
+    </div>
+  </div>
+  <div class="lookup-step">
+    <span class="lookup-num">3</span>
+    <div>
+      <strong>확인한 원료명을 아래 검색창에 입력</strong>
+      <p>영문 코드, 한글명, 인정번호(예: 2025-14) 중 뭐든 검색되도록 만들어뒀어요.</p>
+    </div>
+  </div>
+  <button class="lookup-dismiss" id="lookupDismiss" aria-label="안내 닫기">이해했어요, 닫기</button>
+</div>
+
+<div class="controls">
+  <div class="search-row">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="원료명, 기능성, 인정번호로 검색…" autocomplete="off">
+    </div>
+    <select id="sortSelect" class="sort-select">
+      <option value="score-desc">근거점수 높은 순</option>
+      <option value="score-asc">근거점수 낮은 순</option>
+      <option value="name-asc">가나다순</option>
+      <option value="no-asc">번호순</option>
+    </select>
+  </div>
+  <div class="search-examples" id="searchExamples">
+    <span class="ex-label">인기 검색어</span>
+    <button class="example-chip" data-example="홍삼">홍삼</button>
+    <button class="example-chip" data-example="비타민 C">비타민 C</button>
+    <button class="example-chip" data-example="오메가3">오메가3</button>
+    <button class="example-chip" data-example="콘드로이친">콘드로이친</button>
+  </div>
+  <div class="chip-row" id="chipRow"></div>
+  <div class="result-count" id="resultCount"></div>
+</div>
+
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+
+</div>
+
+<div class="tab-panel" id="tab-rubric" data-tabpanel="rubric">
 <section class="rubric">
   <div class="rubric-head">
     <span class="eyebrow" style="margin-bottom:0;">이 점수, 어떻게 매겼나</span>
@@ -1650,7 +1781,14 @@
     </div>
   </div>
 </section>
+</div>
 
+<div class="tab-panel" id="tab-stats" data-tabpanel="stats">
+<div class="stat-row" style="padding:32px 6vw 0;">
+  <div class="stat"><span class="num" id="statTotal">–</span><span class="lbl">확인한 원료 수</span></div>
+  <div class="stat good"><span class="num" id="statIndividual">–</span><span class="lbl">개별인정형 원료</span></div>
+  <div class="stat warn"><span class="num" id="statMeta">–</span><span class="lbl">메타분석 기반 고시형 원료</span></div>
+</div>
 <section class="stats-section">
   <div class="stats-head">
     <span class="eyebrow" style="margin-bottom:0;">전체 점수 분포</span>
@@ -1662,54 +1800,7 @@
     <p class="hist-caption">가로축은 10점 단위 구간(0~9점, 10~19점 … 90~100점), 막대 위 숫자는 그 구간에 속한 원료 개수예요.</p>
   </div>
 </section>
-
-
-<div class="lookup-banner" id="lookupBanner">
-  <div class="lookup-step">
-    <span class="lookup-num">1</span>
-    <div>
-      <strong>제품 뒷면 &ldquo;원재료명&rdquo;을 확인하세요</strong>
-      <p>건기식은 법적으로 원재료명 전체를 표기해야 해요. 괄호 안 영문 코드(예: LMT1-48, KSM-66®)까지 함께 적혀 있는 경우가 많아요.</p>
-    </div>
-  </div>
-  <div class="lookup-step">
-    <span class="lookup-num">2</span>
-    <div>
-      <strong>원재료명이 헷갈리면 식품안전나라에서 제품명으로 조회</strong>
-      <p>식약처 공식 DB(식품안전나라)는 제품명으로 검색하면 등록된 원재료명을 정확히 보여줘요. 저희는 이 공식 데이터에 접근할 수 없어서, 직접 연결해드리는 대신 안내해드려요.</p>
-      <a href="https://www.foodsafetykorea.go.kr/portal/healthyfoodlife/searchGoods.do" target="_blank" rel="noopener">식품안전나라에서 제품명으로 원료 조회 →</a>
-    </div>
-  </div>
-  <div class="lookup-step">
-    <span class="lookup-num">3</span>
-    <div>
-      <strong>확인한 원료명을 아래 검색창에 입력</strong>
-      <p>영문 코드, 한글명, 인정번호(예: 2025-14) 중 뭐든 검색되도록 만들어뒀어요.</p>
-    </div>
-  </div>
-  <button class="lookup-dismiss" id="lookupDismiss" aria-label="안내 닫기">이해했어요, 닫기</button>
 </div>
-
-<div class="controls">
-  <div class="search-row">
-    <div class="search-box">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <input id="searchInput" type="text" placeholder="원료명, 기능성, 인정번호로 검색…" autocomplete="off">
-    </div>
-    <select id="sortSelect" class="sort-select">
-      <option value="score-desc">근거점수 높은 순</option>
-      <option value="score-asc">근거점수 낮은 순</option>
-      <option value="name-asc">가나다순</option>
-      <option value="no-asc">번호순</option>
-    </select>
-  </div>
-  <div class="chip-row" id="chipRow"></div>
-  <div class="result-count" id="resultCount"></div>
-</div>
-
-<main>
-  <div class="grid" id="grid"></div>
-</main>
 
 <footer>
   <div class="footer-block">
@@ -2254,6 +2345,7 @@ function openModal(id){
   const stampCls = d.status === "검증완료" ? "full" : "partial";
   document.getElementById('modal').innerHTML = `
     <button class="modal-close" id="modalClose" aria-label="닫기">✕</button>
+    <button class="modal-share" id="modalShare" aria-label="공유 링크 복사">🔗 공유 링크 복사</button>
     <span class="appno">${d.evidenceType === "meta" ? d.appno : "제"+d.appno+"호"} · ${d.category}</span>
     ${d.evidenceType === "meta" ? `<div><span class="meta-tag" title="정부 개별인정이 아닌, 성분 전체에 대한 메타분석·체계적문헌고찰을 근거로 채점했어요">📊 메타분석 근거 (고시형 원료)</span></div>` : ""}
     <h2>${d.name}</h2>
@@ -2269,8 +2361,36 @@ function openModal(id){
   `;
   document.getElementById('overlay').classList.add('open');
   document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalShare').addEventListener('click', (e)=>{
+    const url = window.location.origin + window.location.pathname + '#item-' + d.no;
+    const btn = e.currentTarget;
+    const finish = (ok)=>{
+      btn.textContent = ok ? '✅ 링크 복사됨' : '⚠️ 복사 실패, 직접 선택해 주세요';
+      setTimeout(()=>{ btn.textContent = '🔗 공유 링크 복사'; }, 1800);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(()=>finish(true)).catch(()=>finish(false));
+    } else {
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = url; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        finish(true);
+      }catch(err){ finish(false); }
+    }
+  });
+  if(window.location.hash !== '#item-' + d.no){
+    history.replaceState(null, '', '#item-' + d.no);
+  }
 }
-function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  if(window.location.hash){
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
+}
 document.getElementById('overlay').addEventListener('click', (e)=>{
   if(e.target.id === 'overlay') closeModal();
 });
@@ -2404,6 +2524,38 @@ document.getElementById('reportCopyBtn')?.addEventListener('click', ()=>{
 });
 
 render();
+
+// ===== 탭 전환 =====
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active', p.dataset.tabpanel===target));
+    window.scrollTo(0, 0);
+  });
+});
+
+// ===== 인기 검색어 예시 칩 =====
+document.querySelectorAll('.example-chip').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const val = btn.dataset.example;
+    const input = document.getElementById('searchInput');
+    input.value = val;
+    input.dispatchEvent(new Event('input', {bubbles:true}));
+    input.focus();
+  });
+});
+
+// URL 해시로 진입 시 해당 원료 카드를 자동으로 연다 (공유 링크 지원)
+(function openFromHash(){
+  const m = window.location.hash.match(/^#item-(.+)$/);
+  if(m) openModal(m[1]);
+})();
+window.addEventListener('hashchange', ()=>{
+  const m = window.location.hash.match(/^#item-(.+)$/);
+  if(m) openModal(m[1]);
+  else closeModal();
+});
 </script>
 </body>
 </html>
