@@ -183,6 +183,36 @@
   }
   .camera-btn:hover{ color:var(--ink); background:var(--bg); }
 
+  /* ---------- 카테고리 바로가기(플로팅) ---------- */
+  .quickjump{
+    position:fixed; right:22px; bottom:22px; z-index:150;
+    display:flex; flex-direction:column; align-items:flex-end; gap:10px;
+  }
+  .quickjump-btn{
+    width:52px; height:52px; border-radius:50%;
+    background:var(--ink); color:#fff; border:none;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:0 6px 18px -6px rgba(0,0,0,.4);
+  }
+  .quickjump-btn:hover{ background:var(--green-deep); }
+  .quickjump-panel{
+    display:none;
+    max-height:min(420px, 60vh); overflow-y:auto;
+    background:var(--card); border:1px solid var(--line);
+    box-shadow:0 10px 30px -10px rgba(0,0,0,.35);
+    padding:10px; min-width:200px;
+  }
+  .quickjump.open .quickjump-panel{ display:block; }
+  .quickjump-item{
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; padding:9px 10px;
+    font-family:'IBM Plex Mono', monospace; font-size:13px;
+    color:var(--ink); cursor:pointer; white-space:nowrap;
+  }
+  .quickjump-item:hover{ background:var(--paper-deep); }
+  .quickjump-item.active{ color:var(--green-deep); font-weight:700; }
+  .quickjump-item span{ color:var(--ink-soft); font-weight:400; }
+
   /* ---------- 카메라 촬영 모달 ---------- */
   .camera-overlay{
     position:fixed; inset:0; background:rgba(20,20,15,.72);
@@ -1424,17 +1454,19 @@
     stroke-dasharray:9 6;
     stroke-linejoin:round;
   }
-  .radar-legend-bg{
-    fill:var(--card);
-    stroke:var(--line);
-    stroke-width:1;
+  .radar-legend-html{
+    display:flex; justify-content:center; align-items:center;
+    gap:22px; flex-wrap:wrap;
+    padding:0 0 14px;
   }
-  .radar-legend-text{
+  .rl-item{
+    display:inline-flex; align-items:center; gap:8px;
     font-family:'IBM Plex Sans KR', sans-serif;
-    font-size:32px;
-    font-weight:700;
-    fill:var(--ink);
+    font-size:14px; font-weight:700; color:var(--ink);
   }
+  .rl-dot{ width:13px; height:13px; border-radius:50%; flex:none; border:2px solid #fff; box-shadow:0 0 0 1px var(--line); }
+  .rl-dot-red{ background:var(--radar-red); }
+  .rl-dot-blue{ background:var(--radar-blue); }
   .radar-label{
     font-family:'IBM Plex Sans KR', sans-serif;
     font-size:38px;
@@ -1785,7 +1817,7 @@
     <div>
       <strong>원재료명이 헷갈리면 식품안전나라에서 제품명으로 조회</strong>
       <p>식약처 공식 DB(식품안전나라)는 제품명으로 검색하면 등록된 원재료명을 정확히 보여줘요. 저희는 이 공식 데이터에 접근할 수 없어서, 직접 연결해드리는 대신 안내해드려요.</p>
-      <a href="https://www.foodsafetykorea.go.kr/portal/healthyfoodlife/searchGoods.do" target="_blank" rel="noopener">식품안전나라에서 제품명으로 원료 조회 →</a>
+      <a href="https://www.foodsafetykorea.go.kr/portal/healthyfoodlife/searchHomeHF.do?menu_grp=MENU_NEW01&menu_no=2823" target="_blank" rel="noopener">식품안전나라에서 제품명으로 원료 조회 →</a>
     </div>
   </div>
   <div class="lookup-step">
@@ -2065,6 +2097,13 @@
     </div>
   </div>
 
+<div class="quickjump" id="quickJump">
+  <button class="quickjump-btn" id="quickJumpBtn" type="button" aria-label="카테고리 바로가기">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
+  </button>
+  <div class="quickjump-panel" id="quickJumpPanel"></div>
+</div>
+
 <div class="camera-overlay" id="cameraOverlay">
   <div class="camera-modal">
     <div class="camera-modal-head">
@@ -2240,8 +2279,44 @@ function buildChips(){
     return `<span class="chip ${c===activeCat?'active':''}" data-cat="${c}">${c} <span style="opacity:.5">${count}</span></span>`;
   }).join('');
   row.querySelectorAll('.chip').forEach(el=>{
-    el.addEventListener('click', ()=>{ activeCat = el.dataset.cat; render(); });
+    el.addEventListener('click', ()=>{ selectCategory(el.dataset.cat, true); });
   });
+  buildQuickJump(list, cats);
+}
+
+// 화면 우측 하단 "카테고리 바로가기" 플로팅 패널 — 스크롤 위치 상관없이 언제든 카테고리 이동 가능
+function buildQuickJump(list, cats){
+  const panel = document.getElementById('quickJumpPanel');
+  if(!panel) return;
+  panel.innerHTML = list.map(c=>{
+    const count = c === "전체" ? DATA.length : cats[c];
+    return `<div class="quickjump-item ${c===activeCat?'active':''}" data-cat="${c}">${c} <span>${count}</span></div>`;
+  }).join('');
+  panel.querySelectorAll('.quickjump-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      selectCategory(el.dataset.cat, true);
+      document.getElementById('quickJump').classList.remove('open');
+    });
+  });
+}
+
+// 카테고리를 선택하고, 결과 그리드로 곧장 스크롤해서 안내배너를 다시 지나칠 필요가 없게 함.
+// scroll=true면 칩/빠른이동바 클릭처럼 사용자가 직접 고른 경우에만 스크롤.
+function selectCategory(cat, scroll){
+  activeCat = cat;
+  // 다른 탭(통계·채점기준 등)에 있을 때 카테고리를 고르면, 결과를 볼 수 있게 검색 탭으로 전환
+  const searchTabBtn = document.querySelector('.tab-btn[data-tab="search"]');
+  if(searchTabBtn && !searchTabBtn.classList.contains('active')) searchTabBtn.click();
+  if(cat !== "전체"){
+    history.replaceState(null, '', '#cat-' + encodeURIComponent(cat));
+  }else if(window.location.hash.startsWith('#cat-')){
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
+  render();
+  if(scroll){
+    const grid = document.getElementById('grid');
+    if(grid) grid.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
 }
 
 function normalize(s){
@@ -2615,17 +2690,11 @@ function radarChartSVG(d){
     return `<text x="${x.toFixed(1)}" y="${(y+dy).toFixed(1)}" text-anchor="${anchor}" class="radar-label" fill="var(${RADAR_COLOR_VAR[k]})">${RADAR_LABELS[k]}</text>`;
   }).join('');
 
-  // 그래프 안쪽(좌상단)에 넣는 범례: 빨강=이 원료, 파랑=전체 367건 평균
-  const legendHTML = `
-    <g class="radar-legend" transform="translate(-240,-130)">
-      <rect x="-10" y="-30" width="330" height="118" rx="6" class="radar-legend-bg" />
-      <circle cx="14" cy="0" r="12" fill="var(--radar-red)" stroke="#fff" stroke-width="2.5" />
-      <text x="36" y="12" class="radar-legend-text">이 원료</text>
-      <circle cx="14" cy="52" r="10" fill="var(--radar-blue)" stroke="#fff" stroke-width="2.5" />
-      <text x="36" y="64" class="radar-legend-text">전체 ${DATA.length}건 평균</text>
-    </g>`;
-
   return `<div class="radar-block">
+    <div class="radar-legend-html">
+      <span class="rl-item"><span class="rl-dot rl-dot-red"></span>이 원료</span>
+      <span class="rl-item"><span class="rl-dot rl-dot-blue"></span>전체 ${DATA.length}건 평균</span>
+    </div>
     <svg viewBox="-250 -140 900 680" class="radar-svg">
       ${ringPolys}
       ${axisLines}
@@ -2634,7 +2703,6 @@ function radarChartSVG(d){
       <polygon points="${dataPoly}" class="radar-data" />
       ${dots}
       ${labelsHTML}
-      ${legendHTML}
     </svg>
   </div>`;
 }
@@ -2930,6 +2998,17 @@ renderUnapproved();
 
 render();
 
+// ===== 카테고리 바로가기 플로팅 버튼 열고/닫기 =====
+document.getElementById('quickJumpBtn').addEventListener('click', ()=>{
+  document.getElementById('quickJump').classList.toggle('open');
+});
+document.addEventListener('click', (e)=>{
+  const qj = document.getElementById('quickJump');
+  if(qj.classList.contains('open') && !qj.contains(e.target)){
+    qj.classList.remove('open');
+  }
+});
+
 // ===== 탭 전환 =====
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -2953,13 +3032,17 @@ document.querySelectorAll('.example-chip').forEach(btn=>{
 
 // URL 해시로 진입 시 해당 원료 카드를 자동으로 연다 (공유 링크 지원)
 (function openFromHash(){
-  const m = window.location.hash.match(/^#item-(.+)$/);
-  if(m) openModal(m[1]);
+  const itemMatch = window.location.hash.match(/^#item-(.+)$/);
+  if(itemMatch){ openModal(itemMatch[1]); return; }
+  const catMatch = window.location.hash.match(/^#cat-(.+)$/);
+  if(catMatch){ selectCategory(decodeURIComponent(catMatch[1]), false); }
 })();
 window.addEventListener('hashchange', ()=>{
-  const m = window.location.hash.match(/^#item-(.+)$/);
-  if(m) openModal(m[1]);
-  else closeModal();
+  const itemMatch = window.location.hash.match(/^#item-(.+)$/);
+  if(itemMatch){ openModal(itemMatch[1]); return; }
+  closeModal();
+  const catMatch = window.location.hash.match(/^#cat-(.+)$/);
+  if(catMatch) selectCategory(decodeURIComponent(catMatch[1]), false);
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
