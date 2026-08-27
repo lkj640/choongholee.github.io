@@ -26,6 +26,8 @@
     --c-effect:#d6342f;
     --c-coi:#c026a3;
     --c-safety:#0d9488;
+    --radar-red:#c62a2a;
+    --radar-blue:#2160c4;
     --shadow: 0 1px 0 rgba(27,36,32,.06), 0 8px 20px -12px rgba(27,36,32,.25);
   }
   *{box-sizing:border-box;}
@@ -1410,10 +1412,28 @@
   .radar-ring{ fill:none; stroke:#8a8d78; stroke-width:1.5; }
   .radar-axis{ stroke:#8a8d78; stroke-width:1.5; }
   .radar-data{
-    fill:rgba(31,110,82,.18);
-    stroke:var(--green-deep);
+    fill:none;
+    stroke:var(--radar-red);
     stroke-width:2.5;
     stroke-linejoin:round;
+  }
+  .radar-avg{
+    fill:rgba(33,96,196,.16);
+    stroke:var(--radar-blue);
+    stroke-width:3;
+    stroke-dasharray:9 6;
+    stroke-linejoin:round;
+  }
+  .radar-legend-bg{
+    fill:var(--card);
+    stroke:var(--line);
+    stroke-width:1;
+  }
+  .radar-legend-text{
+    font-family:'IBM Plex Sans KR', sans-serif;
+    font-size:32px;
+    font-weight:700;
+    fill:var(--ink);
   }
   .radar-label{
     font-family:'IBM Plex Sans KR', sans-serif;
@@ -2523,6 +2543,26 @@ const RADAR_KEYS = ['design','sample','journal','effect','repro','coi','safety']
 const RADAR_LABELS = { design:'연구설계', sample:'참여자수', journal:'저널등급', effect:'효과크기', repro:'재현성', coi:'독립성', safety:'안전성' };
 const RADAR_COLOR_VAR = { design:'--c-design', sample:'--c-sample', journal:'--c-journal', effect:'--c-effect', repro:'--c-repro', coi:'--c-coi', safety:'--c-safety' };
 
+// 전체 원료의 항목별 평균(%환산)을 한 번만 계산해둠 — 레이더 차트에 파란 기준선으로 표시
+const RADAR_AVG_PCT = (function(){
+  const sums = {}, counts = {};
+  RADAR_KEYS.forEach(k=>{ sums[k]=0; counts[k]=0; });
+  DATA.forEach(d=>{
+    if(!d.sub) return;
+    RADAR_KEYS.forEach(k=>{
+      const raw = d.sub[k];
+      if(raw === undefined || raw === null) return;
+      const weighted = raw * SUB_MULT[k];
+      const max = SUB_MAX[k];
+      sums[k] += max ? weighted/max : 0;
+      counts[k] += 1;
+    });
+  });
+  const avg = {};
+  RADAR_KEYS.forEach(k=>{ avg[k] = counts[k] ? sums[k]/counts[k] : 0; });
+  return avg;
+})();
+
 function radarChartSVG(d){
   if(!d.sub) return "";
   const n = RADAR_KEYS.length;
@@ -2536,6 +2576,13 @@ function radarChartSVG(d){
     const pct = max ? Math.max(0, Math.min(1, weighted/max)) : 0;
     const a = angleFor(i);
     return { x: cx + pct*R*Math.cos(a), y: cy + pct*R*Math.sin(a), k, weighted, max };
+  });
+
+  // 전체 평균 폴리곤(파란색) — 이 원료의 점수(빨간색)와 비교할 수 있는 기준선
+  const avgPts = RADAR_KEYS.map((k,i)=>{
+    const pct = Math.max(0, Math.min(1, RADAR_AVG_PCT[k]));
+    const a = angleFor(i);
+    return { x: cx + pct*R*Math.cos(a), y: cy + pct*R*Math.sin(a) };
   });
 
   const ringLevels = [0.25, 0.5, 0.75, 1];
@@ -2553,7 +2600,9 @@ function radarChartSVG(d){
   }).join('');
 
   const dataPoly = pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-  const dots = pts.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="9" fill="var(${RADAR_COLOR_VAR[p.k]})" stroke="#fff" stroke-width="2.5" />`).join('');
+  const avgPoly = avgPts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const dots = pts.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="9" fill="var(--radar-red)" stroke="#fff" stroke-width="2.5" />`).join('');
+  const avgDots = avgPts.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="6" fill="var(--radar-blue)" stroke="#fff" stroke-width="2" />`).join('');
 
   const labelsHTML = RADAR_KEYS.map((k,i)=>{
     const a = angleFor(i);
@@ -2566,13 +2615,26 @@ function radarChartSVG(d){
     return `<text x="${x.toFixed(1)}" y="${(y+dy).toFixed(1)}" text-anchor="${anchor}" class="radar-label" fill="var(${RADAR_COLOR_VAR[k]})">${RADAR_LABELS[k]}</text>`;
   }).join('');
 
+  // 그래프 안쪽(좌상단)에 넣는 범례: 빨강=이 원료, 파랑=전체 367건 평균
+  const legendHTML = `
+    <g class="radar-legend" transform="translate(-240,-130)">
+      <rect x="-10" y="-30" width="330" height="118" rx="6" class="radar-legend-bg" />
+      <circle cx="14" cy="0" r="12" fill="var(--radar-red)" stroke="#fff" stroke-width="2.5" />
+      <text x="36" y="12" class="radar-legend-text">이 원료</text>
+      <circle cx="14" cy="52" r="10" fill="var(--radar-blue)" stroke="#fff" stroke-width="2.5" />
+      <text x="36" y="64" class="radar-legend-text">전체 ${DATA.length}건 평균</text>
+    </g>`;
+
   return `<div class="radar-block">
     <svg viewBox="-250 -140 900 680" class="radar-svg">
       ${ringPolys}
       ${axisLines}
+      <polygon points="${avgPoly}" class="radar-avg" />
+      ${avgDots}
       <polygon points="${dataPoly}" class="radar-data" />
       ${dots}
       ${labelsHTML}
+      ${legendHTML}
     </svg>
   </div>`;
 }
@@ -2586,7 +2648,11 @@ function subScoreHTML(d){
       </div>
     </div>`;
   }
-  const allKeys = ['effect','design','repro','sample','journal','coi','safety'];
+  // 안전성 우려가 확인된 원료는 "안전성·부작용" 카드를 맨 앞에 보여줌.
+  // 그 외에는 평소대로 "통계적 엄밀성·효과크기"가 맨 앞.
+  const allKeys = d.safetyFlag
+    ? ['safety','effect','design','repro','sample','journal','coi']
+    : ['effect','design','repro','sample','journal','coi','safety'];
   const rows = allKeys.map(key=>{
     const v = d.sub[key] ?? 0;
     const max5 = 5; // 원 채점은 5점 만점, 아래서 배점으로 환산
