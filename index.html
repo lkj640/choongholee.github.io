@@ -1430,6 +1430,24 @@
     line-height:1.6;
     color:var(--ink);
   }
+  .jargon{
+    text-decoration:underline dotted var(--green);
+    text-decoration-thickness:1.5px;
+    text-underline-offset:2px;
+    cursor:help;
+  }
+  .jargon-tip{
+    position:absolute;
+    z-index:300;
+    max-width:260px;
+    background:var(--ink);
+    color:#fff;
+    font-family:'IBM Plex Sans KR', sans-serif;
+    font-size:12.5px;
+    line-height:1.55;
+    padding:9px 12px;
+    box-shadow:0 8px 20px -8px rgba(0,0,0,.5);
+  }
 
   /* ===== 레이더(스파이더) 차트 — 항목별 만점 기준이 달라 %로 정규화해서 그림 ===== */
   .radar-block{
@@ -2589,6 +2607,85 @@ function journalNamesText(d){
   return uniq.slice(0,2).join(" · ") + "에 발표된 논문을 근거로 삼았고, ";
 }
 
+// ===== 어려운 통계·의학 용어에 쉬운 말 자동 주석 달기 =====
+// 원문(정확한 표현)은 그대로 두고, 용어 위에 마우스를 올리거나 탭하면
+// 쉬운 설명이 바로 뜨도록 점선 밑줄 + 툴팁을 씌워줌. 367건 문장을 일일이
+// 다시 쓰지 않고도, 어려운 용어가 나올 때마다 자동으로 풀이가 붙게 함.
+const JARGON_TERMS = [
+  ["이중맹검(?:\\s?교차)?(?:\\s?RCT)?", "참여자도 연구자도 누가 진짜 성분을 먹었는지 모르게 진행한 실험"],
+  ["무작위(?:배정|배정된)?\\s?RCT", "참여자를 무작위로 나눠 진짜 성분과 가짜(위약)를 비교한 실험"],
+  ["\\bRCT\\b", "무작위로 두 그룹에 나눠 진짜 성분과 가짜를 비교하는 실험 방식"],
+  ["네트워크\\s?메타분석", "세 가지 이상을 한꺼번에 비교·순위 매기는 고급 메타분석"],
+  ["메타분석", "여러 개별 연구를 한데 모아 통계적으로 종합한 분석"],
+  ["체계적\\s?문헌고찰", "관련 연구를 빠짐없이 찾아 정해진 기준으로 정리한 리뷰"],
+  ["PROSPERO\\s?(?:사전)?등록", "연구를 시작하기 전에 계획을 미리 공개 등록해둔 것(유리한 결과만 나중에 고르는 걸 막아줌)"],
+  ["위약\\s?대조군?", "진짜 효과가 없는 가짜 성분을 준 비교 그룹"],
+  ["p\\s?&lt;\\s?0\\.0?\\d+|p\\s?<\\s?0\\.0?\\d+|p<0\\.0?\\d+", "이 결과가 우연히 나왔을 가능성이 낮다는 통계 표시(우연이 아니라는 뜻이지, 효과가 크다는 뜻은 아님)"],
+  ["유의(?:하게|한|성)", "통계적으로 우연이 아니라고 판단된다는 뜻"],
+  ["95%\\s?신뢰구간", "진짜 효과가 있을 것으로 추정되는 범위"],
+  ["위험비|상대위험도|리스크\\s?비", "두 그룹의 위험(발생률)을 비교한 배수"],
+  ["효과크기", "차이가 실제로 얼마나 큰지를 나타내는 수치"],
+  ["평균차이|MD\\b|WMD\\b", "두 그룹 결과의 평균이 실제로 얼마나 차이났는지"],
+  ["이질성", "여러 연구의 결과가 서로 얼마나 들쭉날쭉한지"],
+  ["코호트\\s?연구", "특정 집단을 장기간 추적하며 관찰한 연구(원인·결과를 직접 실험하지는 않음)"],
+  ["관찰연구", "실험을 하지 않고 기존 상태를 그대로 지켜보며 기록한 연구"],
+  ["교차\\s?RCT|교차시험", "같은 참여자가 진짜 성분과 가짜 성분을 순서를 바꿔가며 둘 다 먹어보는 실험"],
+  ["용량[-\\s]?반응", "많이 먹을수록 효과도 커지는지 확인하는 것"],
+  ["아만성독성시험", "몇 달간 반복 투여해 몸에 해가 없는지 확인하는 안전성 시험"],
+  ["NOAEL", "이 정도까지는 부작용이 없었다고 확인된 최고 용량"],
+
+  // ── 혈액검사·간기능 수치 ──
+  ["\\bALT\\b", "간세포 손상 여부를 보는 혈액검사 수치 — 높을수록 간이 손상됐다는 신호예요"],
+  ["\\bAST\\b", "간세포 손상 여부를 보는 혈액검사 수치(ALT와 함께 보는 간기능 지표)"],
+  ["\\bLDL\\b", "이른바 '나쁜 콜레스테롤' — 혈관에 쌓이면 심혈관질환 위험을 높여요"],
+  ["\\bHDL\\b", "이른바 '좋은 콜레스테롤' — 수치가 높을수록 심혈관 건강에 유리해요"],
+  ["\\bCRP\\b", "몸속 염증이 얼마나 있는지 보여주는 혈액검사 수치"],
+  ["\\bSOD\\b", "몸속 항산화 효소 수치 — 활성산소를 얼마나 잘 없애는지 보여줘요"],
+  ["\\bPSA\\b", "전립선 건강 상태를 보는 혈액검사 수치"],
+  ["\\bBMI\\b", "키와 몸무게로 계산하는 비만도 지수"],
+  ["\\bFEV1\\b", "숨을 최대한 세게 내쉴 때 1초간 나오는 공기량 — 폐기능을 보는 지표"],
+  ["\\bPPG\\b", "식후에 잰 혈당 수치"],
+
+  // ── 염증 관련 물질(사이토카인) ──
+  ["IL-\\d+|TNF-?α?|IFN-?γ?|PGE2", "염증 반응에 관여하는 몸속 신호물질 수치 — 낮아질수록 염증이 줄었다는 뜻이에요"],
+
+  // ── 통계 용어 ──
+  ["\\bSMD\\b", "연구마다 측정 방법이 달라도 서로 비교할 수 있게 표준화한 효과크기 수치"],
+  ["\\bCI\\b", "진짜 효과가 있을 것으로 추정되는 범위(신뢰구간)"],
+  ["\\bSD\\b", "결과값들이 평균에서 얼마나 흩어져 있는지 보여주는 수치(표준편차)"],
+
+  // ── 연구 절차·기준 ──
+  ["\\bIRB\\b", "이 연구가 참여자에게 윤리적으로 문제없는지 심사하는 기관(임상시험윤리위원회)"],
+  ["\\bGRADE\\b(?!\\s?\\d)", "근거의 질을 '매우낮음~매우높음'으로 등급 매기는 국제 평가기준"],
+  ["\\bGLP\\b", "실험 결과의 신뢰성을 보장하기 위한 국제표준 실험관리기준"],
+  ["\\bRDA\\b", "하루에 섭취하도록 권장되는 영양소 양(1일 권장섭취량)"],
+  ["\\bNHANES\\b", "미국 정부가 진행하는 대규모 국민건강영양조사"],
+  ["\\bFOSHU\\b", "일본 정부가 인정하는 특정건강용도식품 제도(한국의 개별인정형과 비슷해요)"],
+  ["\\bCFU\\b", "생균수를 세는 단위(유산균 제품에 흔히 표기)"],
+  ["\\bIBS\\b", "과민성장증후군 — 복통과 배변습관 변화가 반복되는 만성 장질환"],
+
+  // ── 증상평가 설문척도(질환별로 이름은 다르지만 원리는 같음) ──
+  ["\\b(?:JKOM|OSDI|TBUT|SCORAD|MRS|AMS|PSQI|PAC-SYM|PAC-QOL|IPSS|NDI-K|SGRQ|GSRS|WURSS-21|ADAS-\\w*)\\b",
+    "환자가 직접 답하는 설문 형태의 증상평가 점수예요(관절·눈·피부·수면 등 분야마다 이름이 다른 척도가 있어요)"],
+];
+// 여러 패턴을 순서대로 하나씩 치환하면, 이미 감싼 <span>...</span> 안쪽 텍스트가
+// 다음 패턴에 다시 걸려 이중으로 감싸질 수 있어서, 모든 패턴을 하나의 정규식으로
+// 합쳐 원본 문자열을 한 번만 훑으며 치환함(중첩/이중 래핑 원천 차단).
+const JARGON_COMBINED = new RegExp(
+  JARGON_TERMS.map(([term], i) => `(?<t${i}>${term})`).join('|'), 'g'
+);
+function glossify(text){
+  if(!text) return text;
+  return text.replace(JARGON_COMBINED, (m, ...rest)=>{
+    const groups = rest[rest.length - 1]; // 마지막 인자가 named groups 객체
+    if(!groups) return m;
+    const idx = Object.keys(groups).findIndex(k => groups[k] !== undefined);
+    if(idx === -1) return m;
+    const gloss = JARGON_TERMS[idx][1];
+    return `<span class="jargon" tabindex="0" title="쉬운 설명: ${gloss}">${m}</span>`;
+  });
+}
+
 function categoryReasonSentence(key, v, d){
   // 효과크기·연구독립성·안전성은 원료별로 직접 확인한 문장을 그대로 사용
   const noteKey = SUB_NOTE_KEY[key];
@@ -2727,7 +2824,7 @@ function subScoreHTML(d){
     const weighted = v * SUB_MULT[key];
     const weightedMax = SUB_MAX[key];
     const pct = Math.round((weighted/weightedMax)*100);
-    const reasonText = categoryReasonSentence(key, v, d);
+    const reasonText = glossify(categoryReasonSentence(key, v, d));
     return `<div class="sub-item ${SUB_CLASS[key]}">
       <div class="sub-item-head">
         <span class="sub-name">${SUB_LABELS[key]}</span>
@@ -2997,6 +3094,37 @@ function renderUnapproved(){
 renderUnapproved();
 
 render();
+
+// ===== 어려운 용어(.jargon) 탭/클릭 시 쉬운 설명 풍선 띄우기 (모바일은 title 툴팁이 잘 안 떠서 보강) =====
+(function(){
+  let tip = null;
+  function closeTip(){ if(tip){ tip.remove(); tip = null; } }
+  document.addEventListener('click', (e)=>{
+    const el = e.target.closest && e.target.closest('.jargon');
+    if(!el){ closeTip(); return; }
+    e.stopPropagation();
+    const already = tip && tip.dataset.for === el;
+    closeTip();
+    if(already) return;
+    const gloss = el.getAttribute('title') || "";
+    const bubble = document.createElement('div');
+    bubble.className = 'jargon-tip';
+    bubble.textContent = gloss.replace(/^쉬운 설명:\s*/, '');
+    document.body.appendChild(bubble);
+    const r = el.getBoundingClientRect();
+    const top = r.bottom + window.scrollY + 6;
+    let left = r.left + window.scrollX;
+    bubble.style.top = top + 'px';
+    bubble.style.left = left + 'px';
+    requestAnimationFrame(()=>{
+      const bw = bubble.offsetWidth;
+      const maxLeft = window.scrollX + document.documentElement.clientWidth - bw - 10;
+      if(left > maxLeft) bubble.style.left = Math.max(10, maxLeft) + 'px';
+    });
+    tip = bubble;
+    tip.dataset.for = el;
+  });
+})();
 
 // ===== 카테고리 바로가기 플로팅 버튼 열고/닫기 =====
 document.getElementById('quickJumpBtn').addEventListener('click', ()=>{
