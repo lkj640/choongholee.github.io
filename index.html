@@ -1868,6 +1868,7 @@
     <span class="ex-label">인기 검색어</span>
     <button class="example-chip" data-example="홍삼">홍삼</button>
     <button class="example-chip" data-example="비타민">비타민</button>
+    <button class="example-chip" data-example="미네랄">미네랄</button>
     <button class="example-chip" data-example="오메가3">오메가3</button>
     <button class="example-chip" data-example="콘드로이친">콘드로이친</button>
     <button class="example-chip" data-example="프로바이오틱스">프로바이오틱스</button>
@@ -2353,6 +2354,12 @@ function splitPasteTokens(raw){
     .filter(t => t.length >= 2);
 }
 
+// "미네랄", "비타민"처럼 개별 원료명에는 안 쓰이는 포괄적인 검색어를 실제 해당 원료들로 풀어줌
+const SEARCH_SYNONYMS = {
+  "미네랄": ["칼슘","셀레늄","크롬","아연","마그네슘","철","구리","요오드","망간","칼륨"],
+  "무기질": ["칼슘","셀레늄","크롬","아연","마그네슘","철","구리","요오드","망간","칼륨"],
+};
+
 function filterSort(){
   const rawQuery = query;
   const tokens = rawQuery ? splitPasteTokens(rawQuery) : [];
@@ -2373,9 +2380,14 @@ function filterSort(){
       });
       if(!matched) return false;
     } else if(query){
-      const q = normalize(query);
-      const hay = normalize(d.name + " " + d.func + " " + d.appno + " " + (d.note||""));
-      if(!hay.includes(q)) return false;
+      const synonymNames = SEARCH_SYNONYMS[query.trim()];
+      if(synonymNames){
+        if(!synonymNames.some(n => d.name.startsWith(n))) return false;
+      } else {
+        const q = normalize(query);
+        const hay = normalize(d.name + " " + d.func + " " + d.appno + " " + (d.note||""));
+        if(!hay.includes(q)) return false;
+      }
     }
     return true;
   });
