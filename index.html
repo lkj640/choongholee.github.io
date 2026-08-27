@@ -2291,7 +2291,9 @@ function buildChips(){
   const cats = {};
   DATA.forEach(d => { cats[d.category] = (cats[d.category]||0) + 1; });
   const row = document.getElementById('chipRow');
-  const list = ["전체", ...CAT_ORDER.filter(c=>c!=="전체" && cats[c])];
+  // 빈도(건수) 많은 순으로 정렬. 건수가 같으면 가나다순으로 안정적으로 정렬.
+  const sortedCats = Object.keys(cats).sort((a,b)=> cats[b]-cats[a] || a.localeCompare(b,'ko'));
+  const list = ["전체", ...sortedCats];
   row.innerHTML = list.map(c => {
     const count = c === "전체" ? DATA.length : cats[c];
     return `<span class="chip ${c===activeCat?'active':''}" data-cat="${c}">${c} <span style="opacity:.5">${count}</span></span>`;
