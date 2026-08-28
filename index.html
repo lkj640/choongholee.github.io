@@ -534,7 +534,7 @@
   }
 
   .meter-row{
-    display:flex; align-items:center; gap:10px; margin-top:auto;
+    display:flex; align-items:center; gap:8px; margin-top:auto; min-width:0;
   }
   .meter{
     flex:1;
@@ -550,10 +550,11 @@
     font-family:'IBM Plex Mono', monospace;
     font-weight:700;
     font-size:16px;
-    white-space:nowrap;
+    white-space:normal;
+    word-break:keep-all;
   }
   .meter-score-wrap{
-    display:flex; align-items:center; gap:8px; flex-wrap:nowrap;
+    display:flex; align-items:center; gap:6px; flex-wrap:wrap;
   }
   .score-badge{
     font-family:'IBM Plex Sans KR', sans-serif;
@@ -1935,8 +1936,6 @@
   /* 레이더를 왼쪽 컬럼에 맞게 꽉 채움 */
   .modal-body-cols .radar-block {
     margin: 0;
-    position: sticky;
-    top: 16px;
   }
 
   /* ── 스켈레톤 로딩 카드 ── */
@@ -2551,7 +2550,7 @@ function noevalMeterHTML(){
     <div class="meter"><i style="width:100%;background:#9a9a8e"></i></div>
     <div class="meter-score-wrap">
       <span class="score-badge" style="background:#6b6b5f" title="${tip}">🐁 평가불가</span>
-      <div class="meter-score" style="color:#6b6b5f">공개된 인체시험 논문 없음</div>
+      <div class="meter-score" style="color:#6b6b5f;font-size:13px;line-height:1.35;">공개된<br>인체시험 없음</div>
     </div>
   </div>`;
 }
