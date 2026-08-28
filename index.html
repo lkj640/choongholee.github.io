@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>이 영양제, 진짜 효과 있을까? · 건기식 성분 근거 확인</title>
+<meta name="description" content="건강기능식품 원료마다 과학적 근거 수준은 다릅니다. 원료명을 검색해 논문 기반 근거 점수(100점 만점)를 확인하세요. 동국대학교 약학대학 이충호 교수팀이 공개 임상시험 문헌을 분석한 독립 정보 프로젝트입니다.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="이 영양제, 진짜 효과 있을까? · 건기식 성분 근거 확인">
+<meta property="og:description" content="건강기능식품 원료마다 과학적 근거 수준은 다릅니다. 원료명을 검색해 논문 기반 근거 점수(100점 만점)를 확인하세요.">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="이 영양제, 진짜 효과 있을까? · 건기식 성분 근거 확인">
+<meta name="twitter:description" content="건강기능식품 원료마다 과학적 근거 수준은 다릅니다. 원료명을 검색해 논문 기반 근거 점수(100점 만점)를 확인하세요.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1895,6 +1903,21 @@
     margin-top:8px;
     text-align:right;
   }
+  .card-share-btn{
+    position:absolute;
+    bottom:14px; right:14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    font-weight:600;
+    color:var(--ink-soft);
+    background:transparent;
+    border:1px solid var(--line);
+    padding:3px 8px;
+    cursor:pointer;
+    z-index:10;
+    transition:color .15s, border-color .15s;
+  }
+  .card-share-btn:hover{ color:var(--ink); border-color:var(--ink); }
 
   @media (max-width:640px){
     header.top{padding:40px 5vw 30px;}
@@ -1992,6 +2015,7 @@
 </div>
 
 <main>
+  <div class="scope-notice" id="unapprovedHint" style="margin:0 0 18px;" hidden></div>
   <div class="grid" id="grid"></div>
 </main>
 
@@ -2138,6 +2162,26 @@
       <span class="sl-range">0~49점</span>
     </div>
   </div>
+
+  <!-- 채점 기준 보충 안내 -->
+  <div style="margin-top:28px; display:flex; flex-direction:column; gap:14px;">
+
+    <div class="rubric-tip">
+      <strong>📌 저널등급 채점 기준 상세</strong><br>
+      저널등급은 Impact Factor(IF) 수치만을 기계적으로 적용하지 않습니다. ① 동료심사(peer review) 여부, ② SCIE·SCOPUS 등재 여부, ③ 해당 분야에서의 학술적 평판을 종합해 판단합니다. Nutrients, Frontiers 계열 저널은 동료심사를 거치지만 개방형 출판 모델이어서 게재 기준의 엄격함이 논문마다 다를 수 있어, 저널 자체보다 논문의 방법론을 더 중요하게 참고합니다.
+    </div>
+
+    <div class="rubric-tip">
+      <strong>📌 개별인정형 vs 고시형 원료 채점 방식의 차이</strong><br>
+      <span class="meta-tag" style="vertical-align:middle;">📊 메타분석 근거</span> 배지가 붙은 원료는 고시형 원료로, 성분 전체를 대상으로 한 메타분석·체계적 문헌고찰을 근거로 채점했습니다. 개별인정형 원료는 특정 제품·균주·공정에 대한 임상시험을 근거로 채점합니다. 두 유형은 근거의 성격이 달라 점수를 직접 비교할 때 주의가 필요합니다. 고시형 원료의 점수가 높다고 해서 특정 제품이 그 수준의 근거를 보유한다는 의미가 아닙니다.
+    </div>
+
+    <div class="rubric-tip">
+      <strong>📌 평가자 주관성 고지</strong><br>
+      일곱 항목 모두 논문 원문에서 직접 읽어 채점하지만, 특히 효과크기(20점)·재현성(15점)·COI(15점)는 평가자의 판단이 개입됩니다. 동일 논문을 다른 전문가가 채점하면 점수가 달라질 수 있습니다. 채점 근거는 각 원료 카드의 세부 항목에서 확인할 수 있습니다.
+    </div>
+
+  </div>
 </section>
 </div>
 
@@ -2146,6 +2190,10 @@
   <div class="stat"><span class="num" id="statTotal">–</span><span class="lbl">확인한 원료 수</span></div>
   <div class="stat good"><span class="num" id="statIndividual">–</span><span class="lbl">개별인정형 원료</span></div>
   <div class="stat warn"><span class="num" id="statMeta">–</span><span class="lbl">메타분석 기반 고시형 원료</span></div>
+</div>
+<div class="scope-notice" style="margin:18px 6vw 0;">
+  <span class="scope-notice-icon">ℹ️</span>
+  <span class="scope-notice-text">이 통계는 <b>개별인정형 원료와 고시형 원료를 합산</b>한 수치예요. 두 유형은 채점 방식이 달라 점수를 직접 비교하는 데 한계가 있어요. 분포 해석 시 참고하세요.</span>
 </div>
 <section class="stats-section">
   <div class="stats-head">
@@ -2222,10 +2270,24 @@
 
   <div class="footer-block">
     <div class="footer-label">꼭 읽어주세요 — 면책 안내</div>
-    <p>본 사이트의 평가는 출판된 논문 데이터를 기반으로 한 저희 팀의 독립적 분석 결과이며, 의학적 진단이나 처방을 대신할 수 없습니다. 개인의 건강 상태에 따라 원료의 효과와 안전성은 다를 수 있으니, 실제 섭취 여부는 반드시 의사·약사 등 전문가와 상담한 뒤 결정하세요.</p>
-    <p>식약처의 공식 기능성 인정 여부와 이 페이지가 매긴 과학적 근거 점수는 서로 다른 기준입니다. 식약처 인정을 받았다는 것이 곧 근거가 탄탄하다는 뜻은 아니며, 이 페이지의 점수는 그 근거의 '깊이'를 별도로 평가한 것입니다.</p>
-    <p>원료마다 정확히 어떤 검색어와 데이터베이스로 몇 번 검색했는지, 제외한 논문이 무엇인지까지 일일이 기록해두지는 못했습니다. 이 점은 저희가 인정하는 한계이며, 앞으로 개선하려고 합니다.</p>
-    <p>이 사이트의 점수·서술·분류는 공개 학술자료를 바탕으로 한 독립적 견해이며, 이를 참고한 결과로 발생하는 어떠한 경제적 손해(제품 구매·미구매 결정, 영업상 손실 등)에 대해서도 운영자는 법적 책임을 지지 않습니다. 특정 원료나 제품의 구매·섭취 결정은 반드시 의사·약사 등 전문가와 상담한 뒤 독립적으로 판단하시기 바랍니다.</p>
+
+    <p><strong>의료·처방 대체 불가.</strong> 본 사이트의 평가는 출판된 논문 데이터를 기반으로 한 독립적 분석 결과이며, 의학적 진단이나 처방을 대신할 수 없습니다. 개인의 건강 상태에 따라 원료의 효과와 안전성은 다를 수 있으니, 실제 섭취 여부는 반드시 의사·약사 등 전문가와 상담한 뒤 결정하세요.</p>
+
+    <p><strong>약물 상호작용 주의.</strong> 건강기능식품은 처방의약품과 상호작용할 수 있습니다. 예컨대 오메가-3는 항응고제(와파린 등)와, 홍삼은 면역억제제와 상호작용이 보고된 바 있습니다. 현재 복용 중인 약이 있다면 반드시 의사 또는 약사에게 해당 원료와의 병용 가능 여부를 확인하세요.</p>
+
+    <p><strong>원료 점수 ≠ 특정 제품 점수.</strong> 이 사이트의 점수는 원료(성분) 수준의 평가입니다. 동일 원료를 사용하더라도 제품마다 함량·제형·부형제·제조방식이 다를 수 있어 효과가 다를 수 있으며, 이 점수가 특정 브랜드나 제품의 품질을 보증하거나 부정하는 것이 아닙니다.</p>
+
+    <p><strong>식약처 인정과의 차이.</strong> 식약처의 공식 기능성 인정 여부와 이 페이지가 매긴 근거 점수는 서로 다른 기준입니다. 식약처는 이 사이트가 접근할 수 없는 비공개 제출자료를 포함해 법정 절차로 심사하며, 이 페이지의 점수가 낮다고 해서 해당 원료가 위법하거나 위험하다는 뜻이 아닙니다.</p>
+
+    <p><strong>시간적 한계.</strong> 이 사이트의 점수는 각 원료를 검토한 시점의 공개 문헌 기준입니다. 이후 발표된 연구는 반영되지 않았을 수 있으며, 지금 점수는 확정된 결론이 아니라 특정 시점의 스냅샷입니다. 오류를 발견하거나 새 논문을 알고 계시면 제보 섹션을 통해 알려주세요.</p>
+
+    <p><strong>AI 활용 및 오류 가능성.</strong> 논문 정보 1차 추출 과정에서 대형언어모델(LLM, Claude)을 보조 도구로 활용했습니다. AI는 '환각(hallucination)' — 즉 사실이 아닌 정보를 그럴듯하게 생성하는 — 오류가 발생할 수 있습니다. 모든 정보는 연구자가 원문과 대조·검증했으나, 일부 오류가 남아 있을 가능성을 완전히 배제할 수 없습니다. 의사결정 전 원문 논문을 직접 확인하시기를 권장합니다.</p>
+
+    <p><strong>검색 범위의 한계.</strong> 공개 검색으로 접근 가능한 문헌만 확인할 수 있어, 유료 저널·비영어권 논문 일부는 누락됐을 수 있습니다. 원료별 정확한 검색일·검색어·제외 논문 목록을 일일이 기록하지 못한 점은 저희가 인정하는 한계이며, 향후 개선을 목표로 합니다.</p>
+
+    <p><strong>법적 책임 한계.</strong> 이 사이트의 점수·서술·분류는 공개 학술자료를 바탕으로 한 독립적 견해이며, 이를 참고한 결과로 발생하는 어떠한 손해(제품 구매·미구매 결정, 영업상 손실, 건강상 결과 등)에 대해서도 운영자는 법적 책임을 지지 않습니다.</p>
+
+    <p><strong>소속 기관 무관.</strong> 이 사이트는 동국대학교의 공식 사이트가 아니며, 동국대학교의 공식 입장을 대변하지 않습니다. 운영자 개인의 독립적 연구 프로젝트입니다.</p>
   </div>
 </footer>
 
@@ -2312,15 +2374,19 @@
     </div>
     <p>이 사이트는 건강기능식품 원료의 광고 문구가 아니라 사람을 대상으로 한 임상시험과 학술논문을 중심으로 실제 근거를 확인하기 위해 만든 독립적인 정보 프로젝트입니다.</p>
     <p>모든 평가는 공개된 연구논문을 바탕으로 이루어지며, 새로운 연구가 발표되거나 오류가 발견되면 평가를 수정합니다.</p>
-    <div class="about-disclaimer">이 사이트는 동국대학교의 공식 사이트가 아니며, 동국대학교의 공식 입장을 대변하지 않습니다.</div>
+    <div class="about-disclaimer">이 사이트는 동국대학교의 공식 사이트가 아니며, 동국대학교의 공식 입장을 대변하지 않습니다. 자세한 면책 안내는 아래 푸터를 참고하세요.</div>
   </div>
 
   <div class="about-block">
     <div class="about-block-head">⚠️ 사이트의 한계</div>
     <ul>
-      <li>공개 검색으로 접근 가능한 논문만 확인할 수 있어, 유료 논문·비영어권 저널 일부는 놓쳤을 수 있어요</li>
-      <li>어떤 논문을 "일치하는 원문"으로 볼지 판단하는 과정에 평가자의 주관이 개입될 수 있어요</li>
-      <li>새로운 연구가 나오면 지금 점수가 바뀔 수 있어요 — 지금 점수는 확정된 결론이 아니라 특정 시점의 스냅샷이에요</li>
+      <li><strong>검색 범위</strong> — 공개 검색으로 접근 가능한 논문만 확인할 수 있어, 유료 논문·비영어권 저널 일부는 누락됐을 수 있어요.</li>
+      <li><strong>평가자 주관</strong> — 어떤 논문을 포함할지, 효과크기나 COI를 어떻게 해석할지 판단하는 과정에 평가자의 주관이 개입될 수 있어요. 동일 논문을 다른 평가자가 채점하면 점수가 달라질 수 있습니다.</li>
+      <li><strong>AI 환각 위험</strong> — 1차 정보 추출에 AI(LLM)를 활용했으며, 연구자가 원문과 대조했지만 오류가 남아 있을 가능성이 있어요.</li>
+      <li><strong>시간적 유효성</strong> — 새로운 연구가 나오면 지금 점수가 바뀔 수 있어요. 지금 점수는 확정된 결론이 아니라 특정 시점의 스냅샷이에요.</li>
+      <li><strong>원료 ≠ 제품</strong> — 이 점수는 원료(성분) 수준의 평가예요. 동일 원료를 쓰더라도 제품마다 함량·제형·제조방식이 달라 효과가 다를 수 있어요.</li>
+      <li><strong>약물 상호작용 미반영</strong> — 이 사이트는 처방약과의 병용 위험을 개별적으로 다루지 않아요. 복용 중인 약이 있다면 반드시 의사·약사와 상담하세요.</li>
+      <li><strong>저널 등급 기준</strong> — 저널등급 항목은 동료심사(peer review) 유무, SCIE·SCOPUS 등재 여부, 학술적 평판을 종합해 판단하며, Impact Factor만을 기계적으로 적용하지 않아요. 따라서 같은 저널이라도 검토 시점에 따라 분류가 달라질 수 있어요.</li>
     </ul>
   </div>
 
@@ -2523,8 +2589,16 @@ function filterSort(){
     return true;
   });
   items.sort((a,b)=>{
-    if(sortMode === "score-desc") return (b.score??-1) - (a.score??-1);
-    if(sortMode === "score-asc") return (a.score??99) - (b.score??99);
+    // score가 null인 검증 대기 원료는 점수 정렬에서 항상 맨 뒤로
+    const aNull = a.score === null || a.score === undefined;
+    const bNull = b.score === null || b.score === undefined;
+    if(sortMode === "score-desc" || sortMode === "score-asc"){
+      if(aNull && bNull) return 0;
+      if(aNull) return 1;
+      if(bNull) return -1;
+    }
+    if(sortMode === "score-desc") return b.score - a.score;
+    if(sortMode === "score-asc") return a.score - b.score;
     if(sortMode === "name-asc") return a.name.localeCompare(b.name, 'ko');
     if(sortMode === "no-asc") return a.no - b.no;
     return 0;
@@ -2615,7 +2689,7 @@ function cardHTML(d){
   const metaTag = d.evidenceType === "meta" ? `<span class="meta-tag" title="정부 개별인정이 아닌, 성분 전체에 대한 메타분석·체계적문헌고찰을 근거로 채점했어요">📊 메타분석 근거</span>` : "";
   const markerTag = d.markerBasis ? `<span class="marker-tag" title="이 제품 자체가 아니라, 제품에 표준화된 핵심 활성(지표)성분의 다른 연구를 근거로 평가했어요. 그래서 효과크기 점수에 상한(최대 3점/20점)을 뒀어요.">🧪 지표성분 근거</span>` : "";
   const safetyTag = d.safetyFlag ? `<span class="safety-flag-tag" title="이 원료는 효과와 별개로, 부작용·판매금지·과잉섭취 위험 등 구체적인 안전성 우려가 확인됐어요. 상세 카드에서 안전성 항목을 꼭 확인하세요.">⚠️ 안전성 우려 확인</span>` : "";
-  return `<article class="card" tabindex="0" data-id="${d.no}">
+  return `<article class="card" tabindex="0" role="button" aria-label="${d.name} — ${scoreLabel(d.score)||'미평가'}" data-id="${d.no}">
     ${hoverOverlayHTML(d)}
     <div class="stamp ${stampCls}">${stampTxt}</div>
     <div class="card-top">
@@ -2627,6 +2701,8 @@ function cardHTML(d){
     <p class="ing-func">${d.func || "기능성 정보 없음"}</p>
     ${meterHTML(d.score)}
     ${paperBadge}
+    <button type="button" class="card-share-btn" data-share="${d.no}" aria-label="${d.name} 공유 링크 복사"
+      onclick="event.stopPropagation(); copyCardLink(${d.no}, this);">🔗 공유</button>
   </article>`;
 }
 
@@ -2640,13 +2716,34 @@ function pasteResultSummaryHTML(items){
   return `${items.length}건 표시 중`;
 }
 
+// 검색어가 미인정 원료 목록에 있는지 확인해 배너를 표시
+function renderUnapprovedHint(){
+  const hintEl = document.getElementById('unapprovedHint');
+  if(!hintEl) return;
+  if(!query || query.length < 2){ hintEl.hidden = true; return; }
+  const q = normalize(query);
+  const hits = UNAPPROVED.filter(u => normalize(u.name).includes(q) || q.includes(normalize(u.name)));
+  if(hits.length === 0){ hintEl.hidden = true; return; }
+  hintEl.hidden = false;
+  hintEl.innerHTML = `<span class="scope-notice-icon">⚠️</span>
+    <span class="scope-notice-text">
+      <b>"${hits.map(h=>h.name).join('", "')}"</b>은(는) 저희가 확인한 시점 기준으로
+      <b>식약처 건강기능식품 목록에 등재된 내역이 없는 원료</b>예요.
+      <button type="button" style="background:none;border:none;padding:0;color:var(--green-deep);font-weight:700;font-family:inherit;font-size:inherit;cursor:pointer;text-decoration:underline;"
+        onclick="document.querySelector('.tab-btn[data-tab=unapproved]').click()">미인정 원료 탭에서 자세히 보기 →</button>
+    </span>`;
+}
+
 function render(){
   buildChips();
   const items = filterSort();
   document.getElementById('resultCount').innerHTML = pasteResultSummaryHTML(items);
+  renderUnapprovedHint();
   const grid = document.getElementById('grid');
   if(items.length === 0){
-    grid.innerHTML = `<div class="empty-state">일치하는 원료가 없습니다. 검색어나 필터를 조정해 보세요.</div>`;
+    // 미인정 원료 힌트가 있으면 empty-state 문구를 보완
+    const hasHint = !document.getElementById('unapprovedHint').hidden;
+    grid.innerHTML = `<div class="empty-state">일치하는 원료가 없습니다.${hasHint ? ' 위 안내를 확인해 주세요.' : ' 검색어나 필터를 조정해 보세요.'}</div>`;
     return;
   }
   grid.innerHTML = items.map(cardHTML).join('');
@@ -2684,6 +2781,27 @@ function closeAllPaperPopovers(){
   document.querySelectorAll('.paper-badge[data-no]').forEach(b=> b.setAttribute('aria-expanded','false'));
 }
 document.addEventListener('click', closeAllPaperPopovers);
+
+function copyCardLink(id, btn){
+  const url = window.location.origin + window.location.pathname + '#item-' + id;
+  const original = btn.textContent;
+  const finish = (ok) => {
+    btn.textContent = ok ? '✅ 복사됨' : '⚠️ 실패';
+    setTimeout(()=>{ btn.textContent = original; }, 1800);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(()=>finish(true)).catch(()=>finish(false));
+  } else {
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      finish(true);
+    }catch(e){ finish(false); }
+  }
+}
 
 
 const SUB_LABELS = {
