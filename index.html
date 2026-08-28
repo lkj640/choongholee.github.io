@@ -561,13 +561,13 @@
     margin:auto;
     border:1px solid var(--ink);
     box-shadow:0 30px 60px -20px rgba(0,0,0,.4);
-    padding:28px 28px 32px;
+    padding:18px 20px 22px;
     position:relative;
   }
   .modal-topbar{
     display:flex; justify-content:flex-end; align-items:center;
     gap:8px;
-    margin-bottom:16px;
+    margin-bottom:8px;
   }
   .modal-close{
     position:static;
@@ -599,9 +599,9 @@
   .modal .appno{margin-bottom:10px; display:block;}
   .modal h2{
     font-family:'Noto Serif KR', serif;
-    font-size:26px;
-    line-height:1.3;
-    margin:0 0 14px;
+    font-size:24px;
+    line-height:1.25;
+    margin:0 0 6px;
   }
   .modal-func{
     font-size:14.5px;
@@ -609,13 +609,13 @@
     color:var(--ink);
     background:var(--paper);
     border-left:3px solid var(--green);
-    padding:12px 16px;
-    margin-bottom:18px;
+    padding:8px 12px;
+    margin-bottom:10px;
   }
   .modal-meta{
     display:flex; gap:16px 28px; flex-wrap:wrap;
-    margin-bottom:16px;
-    padding-bottom:16px;
+    margin-bottom:10px;
+    padding-bottom:10px;
     border-bottom:1px dashed var(--line);
   }
   .meta-block .k{
@@ -629,7 +629,7 @@
   .meta-block .v{ font-size:14px; font-weight:600; }
   .modal-score-row{
     display:flex; align-items:center; gap:14px;
-    margin-bottom:14px;
+    margin-bottom:8px;
     flex-wrap:wrap;
   }
   .modal-score-row .meter{ height:8px; }
@@ -969,14 +969,22 @@
     position:relative;
   }
   .ruler-icon-wrap{
-    display:flex; flex-direction:column; align-items:center; gap:2px;
-    flex-shrink:0; min-width:44px; text-align:center;
+    display:flex; flex-direction:column; align-items:center;
+    flex-shrink:0; min-width:40px; text-align:center;
+  }
+  .ruler-text-block{
+    display:flex; flex-direction:column; gap:3px; flex:1; min-width:0;
+  }
+  .ruler-criterion{
+    font-family:'Noto Serif KR', serif;
+    font-size:20px; font-weight:700;
+    line-height:1.2;
+    color:var(--ink);
   }
   .ruler-pts{
     font-family:'IBM Plex Mono', monospace;
-    font-size:11px; font-weight:700;
-    color:inherit; opacity:.75;
-    white-space:nowrap;
+    font-size:14px; font-weight:700;
+    color:inherit; opacity:.8;
   }
   .ruler-chev{
     display:none;
@@ -992,12 +1000,21 @@
   .ruler-label.c-effect{ border-color:var(--c-effect); }
   .ruler-label.c-coi{ border-color:var(--c-coi); }
   .ruler-label.c-safety{ border-color:var(--c-safety); }
+  .ruler-label.c-design .ruler-criterion{ color:var(--c-design); }
+  .ruler-label.c-sample .ruler-criterion{ color:var(--c-sample); }
+  .ruler-label.c-journal .ruler-criterion{ color:var(--c-journal); }
+  .ruler-label.c-repro .ruler-criterion{ color:var(--c-repro); }
+  .ruler-label.c-effect .ruler-criterion{ color:var(--c-effect); }
+  .ruler-label.c-coi .ruler-criterion{ color:var(--c-coi); }
+  .ruler-label.c-safety .ruler-criterion{ color:var(--c-safety); }
   .ruler-icon{ font-size:22px; }
   .ruler-name{
     font-family:'Noto Serif KR', serif;
     font-weight:700;
-    font-size:19px;
-    line-height:1.3;
+    font-size:12.5px;
+    font-weight:400;
+    color:var(--ink-soft);
+    line-height:1.4;
   }
   .ruler-sub{
     font-size:14px;
@@ -1388,11 +1405,11 @@
 
 
   .sub-scores{
-    margin-bottom:20px;
+    margin-bottom:8px;
   }
   .sub-scores-head{
     display:flex; align-items:baseline; justify-content:space-between;
-    margin-bottom:10px;
+    margin-bottom:6px;
   }
   .sub-scores-head .note-label{ margin-bottom:0; }
   .sub-disclaimer{
@@ -1401,8 +1418,8 @@
     font-style:italic;
   }
   .sub-item{
-    padding:12px 14px;
-    margin-bottom:10px;
+    padding:8px 10px;
+    margin-bottom:6px;
     background:var(--paper-deep);
     border-left:4px solid transparent;
   }
@@ -1418,7 +1435,7 @@
     align-items:baseline;
     justify-content:space-between;
     gap:10px;
-    margin-bottom:6px;
+    margin-bottom:4px;
   }
   .sub-item .sub-name{
     font-size:13px;
@@ -1437,7 +1454,7 @@
     height:7px;
     background:var(--paper);
     overflow:hidden;
-    margin-bottom:8px;
+    margin-bottom:4px;
   }
   .sub-item .sub-meter i{
     display:block; height:100%;
@@ -1485,7 +1502,7 @@
 
   /* ===== 레이더(스파이더) 차트 — 항목별 만점 기준이 달라 %로 정규화해서 그림 ===== */
   .radar-block{
-    margin:4px 0 22px;
+    margin:4px 0 10px;
     padding:0;
     background:transparent;
     text-align:center;
@@ -1707,13 +1724,13 @@
   }
 
   .papers-block{
-    margin-bottom:20px;
-    padding-bottom:20px;
+    margin-bottom:12px;
+    padding-bottom:12px;
     border-bottom:1px dashed var(--line);
   }
   .paper-list{
     list-style:none;
-    margin:10px 0 0;
+    margin:6px 0 0;
     padding:0;
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
@@ -1722,7 +1739,7 @@
   .paper-item{
     background:var(--paper);
     border:1px solid var(--line);
-    padding:12px 14px;
+    padding:8px 10px;
   }
   .paper-title{
     font-family:'Noto Serif KR', serif;
@@ -1828,16 +1845,16 @@
   /* ── 모달 내부: 레이더 + 채점카드 2컬럼 ── */
   .modal-body-cols {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 24px;
+    grid-template-columns: 260px 1fr;
+    gap: 16px;
     align-items: start;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
   }
   /* 채점카드: 2컬럼 그리드 */
   .sub-scores {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: 1fr;
+    gap: 6px;
     margin-bottom: 0;
   }
   /* 안전성 카드가 맨 앞에 올 때는 가로 전체폭으로 강조 */
@@ -2076,9 +2093,8 @@
   
   <details class="ruler-row" open>
     <summary class="ruler-label c-effect">
-      <span class="ruler-icon-wrap"><span class="ruler-icon">📈</span><span class="ruler-pts">20점</span></span>
-      <span class="ruler-name">실제로 얼마나 효과가 있었나</span>
-      
+      <span class="ruler-icon-wrap"><span class="ruler-icon">📈</span></span>
+      <span class="ruler-text-block"><span class="ruler-criterion">효과크기 <span class="ruler-pts">20점</span></span><span class="ruler-name">실제로 얼마나 효과가 있었나</span></span>
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2092,9 +2108,8 @@
 
   <details class="ruler-row">
     <summary class="ruler-label c-design">
-      <span class="ruler-icon-wrap"><span class="ruler-icon">🔬</span><span class="ruler-pts">15점</span></span>
-      <span class="ruler-name">실험을 얼마나 꼼꼼하게 했나</span>
-      
+      <span class="ruler-icon-wrap"><span class="ruler-icon">🔬</span></span>
+      <span class="ruler-text-block"><span class="ruler-criterion">연구설계 <span class="ruler-pts">15점</span></span><span class="ruler-name">실험을 얼마나 꼼꼼하게 했나</span></span>
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2108,9 +2123,8 @@
 
   <details class="ruler-row">
     <summary class="ruler-label c-sample">
-      <span class="ruler-icon-wrap"><span class="ruler-icon">👥</span><span class="ruler-pts">25점</span></span>
-      <span class="ruler-name">몇 명이 참여했나</span>
-      
+      <span class="ruler-icon-wrap"><span class="ruler-icon">👥</span></span>
+      <span class="ruler-text-block"><span class="ruler-criterion">참여자수·탈락률 <span class="ruler-pts">25점</span></span><span class="ruler-name">몇 명이 참여했나</span></span>
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2124,9 +2138,8 @@
 
   <details class="ruler-row">
     <summary class="ruler-label c-journal">
-      <span class="ruler-icon-wrap"><span class="ruler-icon">📚</span><span class="ruler-pts">10점</span></span>
-      <span class="ruler-name">믿을 만한 곳에 발표됐나</span>
-      
+      <span class="ruler-icon-wrap"><span class="ruler-icon">📚</span></span>
+      <span class="ruler-text-block"><span class="ruler-criterion">저널등급 <span class="ruler-pts">10점</span></span><span class="ruler-name">믿을 만한 곳에 발표됐나</span></span>
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2140,9 +2153,8 @@
 
   <details class="ruler-row">
     <summary class="ruler-label c-repro">
-      <span class="ruler-icon-wrap"><span class="ruler-icon">🔁</span><span class="ruler-pts">15점</span></span>
-      <span class="ruler-name">다른 연구팀도 같은 결과를 냈나</span>
-      
+      <span class="ruler-icon-wrap"><span class="ruler-icon">🔁</span></span>
+      <span class="ruler-text-block"><span class="ruler-criterion">재현성 <span class="ruler-pts">15점</span></span><span class="ruler-name">다른 연구팀도 같은 결과를 냈나</span></span>
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2156,9 +2168,8 @@
 
   <details class="ruler-row">
     <summary class="ruler-label c-coi">
-      <span class="ruler-icon-wrap"><span class="ruler-icon">⚖️</span><span class="ruler-pts">15점</span></span>
-      <span class="ruler-name">원료회사와 무관하게 독립적으로 진행됐나</span>
-      
+      <span class="ruler-icon-wrap"><span class="ruler-icon">⚖️</span></span>
+      <span class="ruler-text-block"><span class="ruler-criterion">연구독립성(이해충돌) <span class="ruler-pts">15점</span></span><span class="ruler-name">원료회사와 무관하게 독립적으로 진행됐나</span></span>
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2172,9 +2183,8 @@
 
   <details class="ruler-row">
     <summary class="ruler-label c-safety">
-      <span class="ruler-icon-wrap"><span class="ruler-icon">🛡️</span><span class="ruler-pts">10점</span></span>
-      <span class="ruler-name">부작용은 없었나</span>
-      
+      <span class="ruler-icon-wrap"><span class="ruler-icon">🛡️</span></span>
+      <span class="ruler-text-block"><span class="ruler-criterion">안전성·부작용 <span class="ruler-pts">10점</span></span><span class="ruler-name">부작용은 없었나</span></span>
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
