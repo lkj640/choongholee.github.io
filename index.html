@@ -357,7 +357,7 @@
     box-shadow:var(--shadow);
     cursor:pointer;
     transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-    display:flex; flex-direction:column; gap:7px;
+    display:flex; flex-direction:column; gap:0;
   }
   .card:hover{
     transform:translateY(-3px);
@@ -414,6 +414,7 @@
 
   .card-top{
     display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
+    margin-bottom:6px;
   }
   .appno{
     font-family:'IBM Plex Mono', monospace;
@@ -435,7 +436,7 @@
     font-weight:700;
     font-size:16px;
     line-height:1.3;
-    margin:0;
+    margin:0 0 3px;
   }
   .name-en{
     font-family:'IBM Plex Mono', monospace;
@@ -448,6 +449,7 @@
     font-size:13px;
     color:var(--ink-soft);
     line-height:1.55;
+    margin:0 0 8px;
     display:-webkit-box;
     -webkit-line-clamp:2;
     -webkit-box-orient:vertical;
@@ -516,12 +518,12 @@
   .meta-tag{
     display:inline-block; font-size:11px; font-weight:700; color:#5b4a9e;
     background:#f0ecfa; border:1px solid #d8cdf2; border-radius:999px;
-    padding:2px 10px; margin:0;
+    padding:2px 10px; margin:0 0 5px;
   }
   .marker-tag{
     display:inline-block; font-size:11px; font-weight:700; color:#8a5a12;
     background:#fdf0d9; border:1px solid #f0c98a; border-radius:999px;
-    padding:2px 10px; margin:0;
+    padding:2px 10px; margin:0 4px 5px 0;
   }
   .marker-explain{
     display:block; font-size:12px; line-height:1.6; color:var(--ink-soft);
@@ -530,7 +532,7 @@
   .safety-flag-tag{
     display:inline-block; font-size:11px; font-weight:700; color:#a11d1d;
     background:#fbe3e3; border:1px solid #efb0b0; border-radius:999px;
-    padding:2px 10px; margin:0;
+    padding:2px 10px; margin:0 4px 5px 0;
   }
 
   .empty-state{
@@ -961,10 +963,20 @@
   .ruler-row summary{ list-style:none; cursor:default; }
   .ruler-row summary::-webkit-details-marker{ display:none; }
   .ruler-label{
-    display:flex; flex-direction:column; gap:2px;
+    display:flex; flex-direction:row; align-items:center; gap:12px;
     border-left:3px solid transparent;
     padding-left:12px;
     position:relative;
+  }
+  .ruler-icon-wrap{
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    flex-shrink:0; min-width:44px; text-align:center;
+  }
+  .ruler-pts{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; font-weight:700;
+    color:inherit; opacity:.75;
+    white-space:nowrap;
   }
   .ruler-chev{
     display:none;
@@ -980,12 +992,12 @@
   .ruler-label.c-effect{ border-color:var(--c-effect); }
   .ruler-label.c-coi{ border-color:var(--c-coi); }
   .ruler-label.c-safety{ border-color:var(--c-safety); }
-  .ruler-icon{ font-size:18px; margin-bottom:2px; }
+  .ruler-icon{ font-size:22px; }
   .ruler-name{
     font-family:'Noto Serif KR', serif;
     font-weight:700;
-    font-size:15px;
-    line-height:1.35;
+    font-size:19px;
+    line-height:1.3;
   }
   .ruler-sub{
     font-size:14px;
@@ -2061,11 +2073,28 @@
     <h2>100점 만점, 일곱 가지를 따져봤어요</h2>
   </div>
 
+  
   <details class="ruler-row" open>
+    <summary class="ruler-label c-effect">
+      <span class="ruler-icon-wrap"><span class="ruler-icon">📈</span><span class="ruler-pts">20점</span></span>
+      <span class="ruler-name">실제로 얼마나 효과가 있었나</span>
+      
+      <span class="ruler-chev">▾</span>
+    </summary>
+    <div class="ruler">
+      <div class="ruler-tick t1"><b>4</b><span>유의하지 않거나 효과크기가 보고되지 않음</span></div>
+      <div class="ruler-tick t2"><b>8</b><span>통계적으로는 유의하지만 실제 차이는 매우 작음</span></div>
+      <div class="ruler-tick t3"><b>12</b><span>작지만 체감할 수 있는 수준의 유의한 효과</span></div>
+      <div class="ruler-tick t4"><b>16</b><span>임상적으로 의미 있는 중간 크기의 효과</span></div>
+      <div class="ruler-tick t5"><b>20</b><span>여러 지표에서 일관되게 크고 뚜렷한 효과</span></div>
+    </div>
+  </details>
+
+  <details class="ruler-row">
     <summary class="ruler-label c-design">
-      <span class="ruler-icon">🔬</span>
+      <span class="ruler-icon-wrap"><span class="ruler-icon">🔬</span><span class="ruler-pts">15점</span></span>
       <span class="ruler-name">실험을 얼마나 꼼꼼하게 했나</span>
-      <span class="ruler-sub c-design">연구설계 · 15점</span>
+      
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2079,9 +2108,9 @@
 
   <details class="ruler-row">
     <summary class="ruler-label c-sample">
-      <span class="ruler-icon">👥</span>
+      <span class="ruler-icon-wrap"><span class="ruler-icon">👥</span><span class="ruler-pts">25점</span></span>
       <span class="ruler-name">몇 명이 참여했나</span>
-      <span class="ruler-sub c-sample">참여자수·탈락률 · 15점</span>
+      
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2095,9 +2124,9 @@
 
   <details class="ruler-row">
     <summary class="ruler-label c-journal">
-      <span class="ruler-icon">📚</span>
+      <span class="ruler-icon-wrap"><span class="ruler-icon">📚</span><span class="ruler-pts">10점</span></span>
       <span class="ruler-name">믿을 만한 곳에 발표됐나</span>
-      <span class="ruler-sub c-journal">저널등급 · 10점</span>
+      
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2110,26 +2139,10 @@
   </details>
 
   <details class="ruler-row">
-    <summary class="ruler-label c-effect">
-      <span class="ruler-icon">📈</span>
-      <span class="ruler-name">실제로 얼마나 효과가 있었나</span>
-      <span class="ruler-sub c-effect">통계적 엄밀성·효과크기 · 20점</span>
-      <span class="ruler-chev">▾</span>
-    </summary>
-    <div class="ruler">
-      <div class="ruler-tick t1"><b>4</b><span>유의하지 않거나 효과크기가 보고되지 않음</span></div>
-      <div class="ruler-tick t2"><b>8</b><span>통계적으로는 유의하지만 실제 차이는 매우 작음</span></div>
-      <div class="ruler-tick t3"><b>12</b><span>작지만 체감할 수 있는 수준의 유의한 효과</span></div>
-      <div class="ruler-tick t4"><b>16</b><span>임상적으로 의미 있는 중간 크기의 효과</span></div>
-      <div class="ruler-tick t5"><b>20</b><span>여러 지표에서 일관되게 크고 뚜렷한 효과</span></div>
-    </div>
-  </details>
-
-  <details class="ruler-row">
     <summary class="ruler-label c-repro">
-      <span class="ruler-icon">🔁</span>
+      <span class="ruler-icon-wrap"><span class="ruler-icon">🔁</span><span class="ruler-pts">15점</span></span>
       <span class="ruler-name">다른 연구팀도 같은 결과를 냈나</span>
-      <span class="ruler-sub c-repro">재현성 · 15점</span>
+      
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2143,9 +2156,9 @@
 
   <details class="ruler-row">
     <summary class="ruler-label c-coi">
-      <span class="ruler-icon">⚖️</span>
+      <span class="ruler-icon-wrap"><span class="ruler-icon">⚖️</span><span class="ruler-pts">15점</span></span>
       <span class="ruler-name">원료회사와 무관하게 독립적으로 진행됐나</span>
-      <span class="ruler-sub c-coi">연구 독립성(이해충돌) · 15점</span>
+      
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2159,9 +2172,9 @@
 
   <details class="ruler-row">
     <summary class="ruler-label c-safety">
-      <span class="ruler-icon">🛡️</span>
+      <span class="ruler-icon-wrap"><span class="ruler-icon">🛡️</span><span class="ruler-pts">10점</span></span>
       <span class="ruler-name">부작용은 없었나</span>
-      <span class="ruler-sub c-safety">안전성·부작용 · 10점</span>
+      
       <span class="ruler-chev">▾</span>
     </summary>
     <div class="ruler">
@@ -2195,7 +2208,7 @@
       <span class="sl-range">0~49점</span>
     </div>
   </div>
-</section>
+</section></section>
 </div>
 
 <div class="tab-panel" id="tab-stats" data-tabpanel="stats">
