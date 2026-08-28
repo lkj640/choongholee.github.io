@@ -1934,6 +1934,36 @@
     .meta-tag { color: #c0a0ff; background: #2a1f40; border-color: #5a408a; }
     .marker-tag { color: #d4a040; background: #2a1e00; border-color: #7a5010; }
   }
+
+  .quickjump{
+    position:fixed; right:22px; bottom:22px; z-index:150;
+    display:flex; flex-direction:column; align-items:flex-end; gap:10px;
+  }
+  .quickjump.modal-open{ display:none; }
+  .quickjump-btn{
+    width:52px; height:52px; border-radius:50%;
+    background:var(--ink); color:#fff; border:none;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:0 6px 18px -6px rgba(0,0,0,.4);
+  }
+  .quickjump-btn:hover{ background:var(--green-deep); }
+  .quickjump-panel{
+    display:none;
+    max-height:min(420px, 60vh); overflow-y:auto;
+    background:var(--card); border:1px solid var(--line);
+    box-shadow:0 10px 30px -10px rgba(0,0,0,.35);
+    padding:10px; min-width:200px;
+  }
+  .quickjump.open .quickjump-panel{ display:block; }
+  .quickjump-item{
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; padding:9px 10px;
+    font-family:'IBM Plex Mono', monospace; font-size:13px;
+    color:var(--ink); cursor:pointer; white-space:nowrap;
+  }
+  .quickjump-item:hover{ background:var(--paper-deep); }
+  .quickjump-item.active{ color:var(--green-deep); font-weight:700; }
+  .quickjump-item span{ color:var(--ink-soft); font-weight:400; }
 </style>
 </head>
 <body>
@@ -1949,7 +1979,6 @@
   <h1>이 영양제,<br><em>진짜 효과 있을까?</em></h1>
   <p class="lede" id="ledeText">건강기능식품 원료마다 이를 뒷받침하는 과학적 근거의 수준은 서로 달라요. 원료명을 검색해서 논문 기반 근거 점수를 확인해보세요.</p>
 </header>
-
 <div class="tabbar-wrap">
   <nav class="tabbar">
     <button class="tab-btn active" data-tab="search">🔍 원료 검색</button>
@@ -2317,7 +2346,6 @@
         <div class="evaluator-name">이충호</div>
         <div class="evaluator-affil">동국대학교 약학대학 교수</div>
         <div class="evaluator-email"><a href="#" class="email-link" id="evalEmailLink">이메일 보내기</a></div>
-<script>document.getElementById("evalEmailLink").href="mailto:"+_em;</script>
         <ul class="evaluator-cv">
           <li>서울대학교 약학대학 학사</li>
           <li>노스웨스턴 의과대학 미생물학 박사</li>
@@ -2331,11 +2359,20 @@
   </div>
 
   <div class="about-block">
+    <div class="about-block-head">🤖 AI 활용 안내</div>
+    <p>논문 검색 및 1차 정보 추출 과정에서 대형언어모델(LLM, Claude)을 보조 도구로 활용했습니다. AI가 논문 원문에서 연구설계·참여자수·효과크기 등 항목별 정보를 초안으로 추출하면, 연구자가 원문을 직접 대조·검증한 뒤 최종 점수를 확정하는 방식으로 진행했습니다. AI는 보조 역할에 그치며, 점수의 최종 판단과 책임은 사람인 연구자에게 있습니다.</p>
+  </div>
+
+  <div class="about-block">
     <div class="about-block-head">⚠️ 사이트의 한계</div>
     <ul>
-      <li>공개 검색으로 접근 가능한 논문만 확인할 수 있어, 유료 논문·비영어권 저널 일부는 놓쳤을 수 있어요</li>
-      <li>어떤 논문을 "일치하는 원문"으로 볼지 판단하는 과정에 평가자의 주관이 개입될 수 있어요</li>
-      <li>새로운 연구가 나오면 지금 점수가 바뀔 수 있어요 — 지금 점수는 확정된 결론이 아니라 특정 시점의 스냅샷이에요</li>
+      <li><b>검색 범위</b> — 공개 검색으로 접근 가능한 논문만 확인할 수 있어, 유료 논문·비영어권 저널 일부는 누락됐을 수 있어요.</li>
+      <li><b>평가자 주관</b> — 어떤 논문을 포함할지, 효과크기나 COI를 어떻게 해석할지 판단하는 과정에 평가자의 주관이 개입될 수 있어요. 동일 논문을 다른 평가자가 채점하면 점수가 달라질 수 있습니다.</li>
+      <li><b>AI 환각 위험</b> — 1차 정보 추출에 AI(LLM)를 활용했으며, 연구자가 원문과 대조했지만 오류가 남아 있을 가능성이 있어요.</li>
+      <li><b>시간적 유효성</b> — 새로운 연구가 나오면 지금 점수가 바뀔 수 있어요. 지금 점수는 확정된 결론이 아니라 특정 시점의 스냅샷이에요.</li>
+      <li><b>원료 ≠ 제품</b> — 이 점수는 원료(성분) 수준의 평가예요. 동일 원료를 쓰더라도 제품마다 함량·제형·제조방식이 달라 효과가 다를 수 있어요.</li>
+      <li><b>약물 상호작용 미반영</b> — 이 사이트는 처방약과의 병용 위험을 개별적으로 다루지 않아요. 복용 중인 약이 있다면 반드시 의사·약사와 상담하세요.</li>
+      <li><b>저널 등급 기준</b> — 저널등급 항목은 동료심사(peer review) 유무, SCIE·SCOPUS 등재 여부, 학술적 평판을 종합해 판단하며, Impact Factor만을 기계적으로 적용하지 않아요. 따라서 같은 저널이라도 검토 시점에 따라 분류가 달라질 수 있어요.</li>
     </ul>
   </div>
 
@@ -3422,6 +3459,8 @@ render();
   const d2 = document.getElementById('reportInlineEmail');
   if(d1) d1.textContent = _em;
   if(d2) d2.textContent = _em;
+  const el = document.getElementById('evalEmailLink');
+  if(el) el.href = 'mailto:' + _em;
 })();
 
 // ===== 어려운 용어(.jargon) 탭/클릭 시 쉬운 설명 풍선 띄우기 (모바일은 title 툴팁이 잘 안 떠서 보강) =====
