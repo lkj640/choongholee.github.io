@@ -3077,7 +3077,7 @@ function radarChartSVG(d){
 
   return `<div class="radar-block">
     <div class="radar-legend-html">
-      <span class="rl-item"><span class="rl-dot rl-dot-red"></span>이 원료</span>
+      <span class="rl-item"><span class="rl-dot rl-dot-red"></span>${d.name}</span>
       <span class="rl-item"><span class="rl-dot rl-dot-blue"></span>전체 ${DATA.length}건 평균</span>
     </div>
     <svg viewBox="-250 -140 900 680" class="radar-svg">
