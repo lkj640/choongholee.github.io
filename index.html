@@ -624,19 +624,33 @@
     background:rgba(20,26,22,.55);
     display:none;
     align-items:center; justify-content:center;
-    padding:24px;
+    padding:16px 8px;
     z-index:100;
   }
   .overlay.open{ display:flex; }
   .modal{
     background:var(--card);
-    max-width:640px; width:100%;
-    max-height:86vh; overflow-y:auto;
+    max-width:860px; width:100%;
+    max-height:92vh; overflow-y:auto;
     border:1px solid var(--ink);
     box-shadow:0 30px 60px -20px rgba(0,0,0,.4);
-    padding:32px 32px 28px;
+    padding:28px 20px 24px;
     position:relative;
   }
+  /* 모달 내부 좌우 여백 최소화 */
+  @media (min-width:641px){
+    .overlay{ padding:12px 6px; }
+    .modal{ padding:22px 16px 20px; }
+  }
+  @media (max-width:640px){
+    .overlay{ padding:0; align-items:flex-end; }
+    .modal{
+      max-height:94vh;
+      border-bottom:none;
+      padding:18px 12px 20px;
+    }
+  }
+
   .modal-topbar{
     display:flex; justify-content:flex-end; align-items:center;
     gap:8px;
@@ -868,7 +882,7 @@
   /* ---------- 근거 제보 폼 ---------- */
   .report-section{
     background:var(--paper-deep);
-    padding:26px 24px;
+    padding:20px 16px;
   }
   .report-lead{
     font-family:'Noto Serif KR', serif;
@@ -1721,7 +1735,7 @@
 
   .sub100-block{
     margin:4px 0 22px;
-    padding:16px 16px 14px;
+    padding:14px 12px;
     background:linear-gradient(135deg, rgba(31,110,82,.05), rgba(29,111,214,.05));
     border:1px solid var(--line);
   }
@@ -2015,7 +2029,6 @@
 </div>
 
 <main>
-  <div class="scope-notice" id="unapprovedHint" style="margin:0 0 18px;" hidden></div>
   <div class="grid" id="grid"></div>
 </main>
 
@@ -2718,13 +2731,25 @@ function pasteResultSummaryHTML(items){
 
 // 검색어가 미인정 원료 목록에 있는지 확인해 배너를 표시
 function renderUnapprovedHint(){
-  const hintEl = document.getElementById('unapprovedHint');
-  if(!hintEl) return;
-  if(!query || query.length < 2){ hintEl.hidden = true; return; }
+  let hintEl = document.getElementById('unapprovedHint');
+  if(!query || query.length < 2){
+    if(hintEl) hintEl.remove();
+    return;
+  }
   const q = normalize(query);
   const hits = UNAPPROVED.filter(u => normalize(u.name).includes(q) || q.includes(normalize(u.name)));
-  if(hits.length === 0){ hintEl.hidden = true; return; }
-  hintEl.hidden = false;
+  if(hits.length === 0){
+    if(hintEl) hintEl.remove();
+    return;
+  }
+  if(!hintEl){
+    hintEl = document.createElement('div');
+    hintEl.id = 'unapprovedHint';
+    hintEl.className = 'scope-notice';
+    hintEl.style.margin = '0 0 18px';
+    const grid = document.getElementById('grid');
+    grid.parentNode.insertBefore(hintEl, grid);
+  }
   hintEl.innerHTML = `<span class="scope-notice-icon">⚠️</span>
     <span class="scope-notice-text">
       <b>"${hits.map(h=>h.name).join('", "')}"</b>은(는) 저희가 확인한 시점 기준으로
@@ -2742,7 +2767,7 @@ function render(){
   const grid = document.getElementById('grid');
   if(items.length === 0){
     // 미인정 원료 힌트가 있으면 empty-state 문구를 보완
-    const hasHint = !document.getElementById('unapprovedHint').hidden;
+    const hasHint = !!document.getElementById('unapprovedHint');
     grid.innerHTML = `<div class="empty-state">일치하는 원료가 없습니다.${hasHint ? ' 위 안내를 확인해 주세요.' : ' 검색어나 필터를 조정해 보세요.'}</div>`;
     return;
   }
