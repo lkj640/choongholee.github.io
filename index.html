@@ -57,8 +57,8 @@
   /* ---------- Header ---------- */
   header.top{
     position:relative;
-    padding:56px 6vw 0;
-    border-bottom:none;
+    padding:56px 6vw 24px;
+    border-bottom:1px solid var(--line);
     overflow:hidden;
   }
   header.top::before{
@@ -267,9 +267,9 @@
     font-family:'IBM Plex Sans KR', sans-serif;
     font-size:12.5px;
     color:var(--ink-soft);
-    padding:14px 6vw 18px;
-    border-top:1px solid var(--line);
-    margin-top:20px;
+    padding:10px 6vw;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
   }
   .search-examples .ex-label{ margin-right:2px; }
   .example-chip{
@@ -2018,15 +2018,6 @@
   <h1>이 영양제,<br><em>진짜 효과 있을까?</em></h1>
   <p class="lede" id="ledeText">건강기능식품 원료마다 이를 뒷받침하는 과학적 근거의 수준은 서로 달라요. 원료명을 검색해서 논문 기반 근거 점수를 확인해보세요.</p>
 
-<div class="search-examples" id="searchExamples">
-  <span class="ex-label">인기 검색어</span>
-  <button class="example-chip" data-example="홍삼">홍삼</button>
-  <button class="example-chip" data-example="비타민">비타민</button>
-  <button class="example-chip" data-example="미네랄">미네랄</button>
-  <button class="example-chip" data-example="오메가3">오메가3</button>
-  <button class="example-chip" data-example="콘드로이친">콘드로이친</button>
-  <button class="example-chip" data-example="프로바이오틱스">프로바이오틱스</button>
-</div>
 </header>
 <div class="tabbar-wrap">
   <nav class="tabbar">
@@ -2071,6 +2062,15 @@
   <button class="lookup-dismiss" id="lookupDismiss" aria-label="안내 닫기">이해했어요, 닫기</button>
 </div>
 
+<div class="search-examples" id="searchExamples">
+  <span class="ex-label">인기 검색어</span>
+  <button class="example-chip" data-example="홍삼">홍삼</button>
+  <button class="example-chip" data-example="비타민">비타민</button>
+  <button class="example-chip" data-example="미네랄">미네랄</button>
+  <button class="example-chip" data-example="오메가3">오메가3</button>
+  <button class="example-chip" data-example="콘드로이친">콘드로이친</button>
+  <button class="example-chip" data-example="프로바이오틱스">프로바이오틱스</button>
+</div>
 <div class="controls">
   <div class="search-row">
     <div class="search-box">
